@@ -10,6 +10,7 @@ from sklearn import linear_model
 import pandas as pd
 import numpy as np
 import random
+import time
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import Pipeline
 from ucimlrepo import fetch_ucirepo
@@ -25,9 +26,10 @@ warnings.filterwarnings("ignore")
 
 
 def main():
-    # The goal here is to showcase the advantages of data augmentation and generation on
-    # dataset models with issues that prevent them from being ideal for training prediction models
-    # on. Consider the below set:
+    print("The goal here is to showcase the advantages of data augmentation and generation on")
+    print("dataset models with issues that prevent them from being ideal for training prediction")
+    print("models on. Consider the below set:")
+    print("")
     # 
    
     # In[3]:
@@ -35,28 +37,38 @@ def main():
    
    
     polish_companies_bankruptcy = fetch_ucirepo(id=365)
-    
-    # note we drop the missing values for ease of predictions down the line towards proving improvements with
-    # data augmentation. In a more thorough study, we would do something to keep these rows
+
+
     df = pd.DataFrame(polish_companies_bankruptcy.data.features).dropna()
    
     targets = polish_companies_bankruptcy.data.targets["class"]
     targets = targets[df.index]
-    df.head()
+
+    print(df.head())
+    print("number of rows: ", len(df))
+    print("")
+
+    print("Above is a dataset based off of Polish Banks. The features aren't labeled here") 
+    print("(for example the first 2 are 'net profit/total assests' and 'total liabilities / total assets')") 
+    print("but they're largely irrelevant to know here, just realize they have some weight to the prediction")
+    print("we're aiming for. In this case, we're trying to predict banks that are likely to go bankrupt where")
+    print("(1) is positive and (0) is negative. Next we'll look at how imbalanced these classes are for the dataset")
+    print("")
+
+    print("(note we drop the missing values in this scenario, since we just want to showcase")
+    print("data augmentation. In a more thorough study, we would do something to keep these rows)")
+    print("")
+
+    time.sleep(60)
    
-   
-    # Above is a dataset based off of Polish Banks. The features aren't labeled here (for example the first 2 are "net profit/total assests" and "total liabilities / total assets") but they're largely irrelevant to know here, just realize they have some weight to the prediction we're aiming for. In this case, we're trying to predict banks that are likely to go bankrupt where (1) is positive and (0) is negative. Let's get some statistics on the dataset we have here, along with includ
-   
-    # In[4]:
-   
-   
-    len(df) #number of rows
+
    
    
     # In[5]:
    
-   
-    targets.value_counts() #number of bankruptcy(1) and non-bankruptcy(0) values
+    print("number of bankruptcy(1) and non-bankruptcy(0) values:")
+    print(targets.value_counts())
+    print("")
    
    
     # In[6]:
