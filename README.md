@@ -20,7 +20,7 @@
        "source venv/bin/activate" (Macbook) / "venv\Scripts\activate" (Windows)
        install -r requirements.txt
 
-4. Run the baselien code via "python run_baseline.py"
+4. Run the baseline code via "python run_baseline.py"
 
 ### Downloading the VOC dataset
 1. Navigate into the datasets folder within the project using the cd command
