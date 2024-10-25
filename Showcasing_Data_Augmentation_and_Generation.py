@@ -308,156 +308,156 @@ def main():
    
    
    
-   # Generate interaction terms and polynomial features (degree=2 for pairwise interactions)
-   poly = PolynomialFeatures(degree=2, include_bias=False)
-   X_train_poly = poly.fit_transform(X_train)
-   X_valid_poly = poly.fit_transform(X_valid)
-   X_test_poly = poly.fit_transform(X_test)
+    # Generate interaction terms and polynomial features (degree=2 for pairwise interactions)
+    poly = PolynomialFeatures(degree=2, include_bias=False)
+    X_train_poly = poly.fit_transform(X_train)
+    X_valid_poly = poly.fit_transform(X_valid)
+    X_test_poly = poly.fit_transform(X_test)
    
    
-   # In[25]:
+    # In[25]:
+    
+    
+    logistic_mod_feature = linear_model.LogisticRegression().fit(X_train_poly,y_train)
+    pred_valid = logistic_mod_feature.predict(X_valid_poly)
+    pred_test = logistic_mod_feature.predict(X_test_poly)
    
    
-   logistic_mod_feature = linear_model.LogisticRegression().fit(X_train_poly,y_train)
-   pred_valid = logistic_mod_feature.predict(X_valid_poly)
-   pred_test = logistic_mod_feature.predict(X_test_poly)
+    # In[26]:
+    
+    
+    #Validation set result:
+    acc_valid = accuracy(pred_valid, y_valid)
+    precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
+    print("Accuracy: ", acc_valid)
+    print("Precision: ", precision_valid)
+    print("Recall: ", recall_valid)
+    print("f1_score: ", f1_score_valid)
    
    
-   # In[26]:
+    # In[27]:
    
    
-   #Validation set result:
-   acc_valid = accuracy(pred_valid, y_valid)
-   precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
-   print("Accuracy: ", acc_valid)
-   print("Precision: ", precision_valid)
-   print("Recall: ", recall_valid)
-   print("f1_score: ", f1_score_valid)
-   
-   
-   # In[27]:
-   
-   
-   #Test set result:
-   acc_test = accuracy(pred_test, y_test)
-   precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
-   print("Accuracy: ", acc_test)
-   print("Precision: ", precision_test)
-   print("Recall: ", recall_test)
-   print("f1_score: ", f1_score_test)
-   
-   
-   # Based on the results here, it seems we could find any combination of polynomial functions to the 2nd degree that could help improve our measurers here in comparison to our other two methods. Due to the longer run time here, we likely shouldn't focus too much on this method if our improvements were barely made for longer time taken. 
-   
-   # # Targeted Undersampling (for Class Balance)
-   
-   # Similar to how SMOTE creates more of the minority classes values, we can also a data augmentation technique to reduce the amount of majority class values to help with imbalance. The concepts and ideas are generally the same with similar pros and cons. Here we use the RandomUnderSampler which chooses a random subset of points from the majority class to be removed. Note this is the main difference to something like SMOTE which increases the number of values wheareas here we decrease them.
-   
-   # In[28]:
-   
-   
-   rus = RandomUnderSampler(random_state=42)
-   X_train_resampled, y_train_resampled = rus.fit_resample(X_train, y_train)
-   logistic_mod_rus = linear_model.LogisticRegression().fit(X_train_resampled,y_train_resampled)
-   pred_valid = logistic_mod_rus.predict(X_valid)
-   pred_test = logistic_mod_rus.predict(X_test)
-   
-   
-   # In[29]:
-   
-   
-   print(len(X_train))
-   print(len(X_train_resampled))
-   
-   
-   # In[30]:
-   
-   
-   #Validation set result:
-   acc_valid = accuracy(pred_valid, y_valid)
-   precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
-   print("Accuracy: ", acc_valid)
-   print("Precision: ", precision_valid)
-   print("Recall: ", recall_valid)
-   print("f1_score: ", f1_score_valid)
-   
-   
-   # In[31]:
-   
-   
-   #Test set result:
-   acc_test = accuracy(pred_test, y_test)
-   precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
-   print("Accuracy: ", acc_test)
-   print("Precision: ", precision_test)
-   print("Recall: ", recall_test)
-   print("f1_score: ", f1_score_test)
-   
-   
-   # Interestingly, it seems the results here are quite similar to what was achieved with SMOTE. We have a very much improved recall but we're making a lot more incorrect predictions for bankruptcy still, and we have a reduction in accuracy as well.
-   
-   # # Combined Techniques
-   # 
-   # Now let's apply all of these methods all on one singular model:
-   
-   # In[32]:
-   
-   
-   def add_noise(X, noise_level=0.1):
-       noise = np.random.normal(loc=0, scale=noise_level, size=X.shape)
-       return X + noise
-   
-   
-   # In[33]:
-   
-   
-   #SMOTe
-   smote = SMOTE(sampling_strategy='auto')
-   X_smote_train, y_smote_train = smote.fit_resample(X_train, y_train)
-   
-   #RUS
-   rus = RandomUnderSampler(random_state=42)
-   X_train_resampled, y_train_resampled = rus.fit_resample(X_smote_train, y_smote_train)
-   
-   #noise injection
-   X_resampled_noisy = add_noise(X_train_resampled, noise_level=0.05)
-   
-   #polynomial features
-   poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
-   X_train_poly = poly.fit_transform(X_resampled_noisy)
-   X_valid_poly = poly.fit_transform(X_valid)
-   X_test_poly = poly.fit_transform(X_test)
-   
-   logistic_mod_feature = linear_model.LogisticRegression().fit(X_train_poly,y_train_resampled)
-   pred_valid = logistic_mod_feature.predict(X_valid_poly)
-   pred_test = logistic_mod_feature.predict(X_test_poly)
-   
-   
-   # In[34]:
-   
-   
-   #Validation set result:
-   acc_valid = accuracy(pred_valid, y_valid)
-   precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
-   print("Accuracy: ", acc_valid)
-   print("Precision: ", precision_valid)
-   print("Recall: ", recall_valid)
-   print("f1_score: ", f1_score_valid)
-   
-   
-   # In[35]:
-   
-   
-   #Test set result:
-   acc_test = accuracy(pred_test, y_test)
-   precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
-   print("Accuracy: ", acc_test)
-   print("Precision: ", precision_test)
-   print("Recall: ", recall_test)
-   print("f1_score: ", f1_score_test)
-   
-   
-   # These results ended up being the most balanced out of what we got, seeing as we have the highest combination of accuracy and recall, along with moderately high precision and f1_score in comparison to our other models. Of course, we still hit quite low values for precision and f1_score so we can always improve to something more ideal by changing methods or tuning the hyperparameters. Nevertheless, data augmentation in this case has proven to help remedy and train models such that they can understand the data they're working with better by factoring noise and classifications with weight. Now that we highlighted these benefits, let's try something more complex. 
+    #Test set result:
+    acc_test = accuracy(pred_test, y_test)
+    precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
+    print("Accuracy: ", acc_test)
+    print("Precision: ", precision_test)
+    print("Recall: ", recall_test)
+    print("f1_score: ", f1_score_test)
+    
+    
+    # Based on the results here, it seems we could find any combination of polynomial functions to the 2nd degree that could help improve our measurers here in comparison to our other two methods. Due to the longer run time here, we likely shouldn't focus too much on this method if our improvements were barely made for longer time taken. 
+    
+    # # Targeted Undersampling (for Class Balance)
+    
+    # Similar to how SMOTE creates more of the minority classes values, we can also a data augmentation technique to reduce the amount of majority class values to help with imbalance. The concepts and ideas are generally the same with similar pros and cons. Here we use the RandomUnderSampler which chooses a random subset of points from the majority class to be removed. Note this is the main difference to something like SMOTE which increases the number of values wheareas here we decrease them.
+    
+    # In[28]:
+    
+    
+    rus = RandomUnderSampler(random_state=42)
+    X_train_resampled, y_train_resampled = rus.fit_resample(X_train, y_train)
+    logistic_mod_rus = linear_model.LogisticRegression().fit(X_train_resampled,y_train_resampled)
+    pred_valid = logistic_mod_rus.predict(X_valid)
+    pred_test = logistic_mod_rus.predict(X_test)
+    
+    
+    # In[29]:
+    
+    
+    print(len(X_train))
+    print(len(X_train_resampled))
+    
+    
+    # In[30]:
+    
+    
+    #Validation set result:
+    acc_valid = accuracy(pred_valid, y_valid)
+    precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
+    print("Accuracy: ", acc_valid)
+    print("Precision: ", precision_valid)
+    print("Recall: ", recall_valid)
+    print("f1_score: ", f1_score_valid)
+    
+    
+    # In[31]:
+    
+    
+    #Test set result:
+    acc_test = accuracy(pred_test, y_test)
+    precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
+    print("Accuracy: ", acc_test)
+    print("Precision: ", precision_test)
+    print("Recall: ", recall_test)
+    print("f1_score: ", f1_score_test)
+    
+    
+    # Interestingly, it seems the results here are quite similar to what was achieved with SMOTE. We have a very much improved recall but we're making a lot more incorrect predictions for bankruptcy still, and we have a reduction in accuracy as well.
+    
+    # # Combined Techniques
+    # 
+    # Now let's apply all of these methods all on one singular model:
+    
+    # In[32]:
+    
+    
+    def add_noise(X, noise_level=0.1):
+        noise = np.random.normal(loc=0, scale=noise_level, size=X.shape)
+        return X + noise
+    
+    
+    # In[33]:
+    
+    
+    #SMOTe
+    smote = SMOTE(sampling_strategy='auto')
+    X_smote_train, y_smote_train = smote.fit_resample(X_train, y_train)
+    
+    #RUS
+    rus = RandomUnderSampler(random_state=42)
+    X_train_resampled, y_train_resampled = rus.fit_resample(X_smote_train, y_smote_train)
+    
+    #noise injection
+    X_resampled_noisy = add_noise(X_train_resampled, noise_level=0.05)
+    
+    #polynomial features
+    poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
+    X_train_poly = poly.fit_transform(X_resampled_noisy)
+    X_valid_poly = poly.fit_transform(X_valid)
+    X_test_poly = poly.fit_transform(X_test)
+    
+    logistic_mod_feature = linear_model.LogisticRegression().fit(X_train_poly,y_train_resampled)
+    pred_valid = logistic_mod_feature.predict(X_valid_poly)
+    pred_test = logistic_mod_feature.predict(X_test_poly)
+    
+    
+    # In[34]:
+    
+    
+    #Validation set result:
+    acc_valid = accuracy(pred_valid, y_valid)
+    precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
+    print("Accuracy: ", acc_valid)
+    print("Precision: ", precision_valid)
+    print("Recall: ", recall_valid)
+    print("f1_score: ", f1_score_valid)
+    
+    
+    # In[35]:
+    
+    
+    #Test set result:
+    acc_test = accuracy(pred_test, y_test)
+    precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
+    print("Accuracy: ", acc_test)
+    print("Precision: ", precision_test)
+    print("Recall: ", recall_test)
+    print("f1_score: ", f1_score_test)
+    
+    
+    # These results ended up being the most balanced out of what we got, seeing as we have the highest combination of accuracy and recall, along with moderately high precision and f1_score in comparison to our other models. Of course, we still hit quite low values for precision and f1_score so we can always improve to something more ideal by changing methods or tuning the hyperparameters. Nevertheless, data augmentation in this case has proven to help remedy and train models such that they can understand the data they're working with better by factoring noise and classifications with weight. Now that we highlighted these benefits, let's try something more complex. 
 
 if __name__ == "__main__":
     main()
