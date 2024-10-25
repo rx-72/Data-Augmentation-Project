@@ -35,7 +35,7 @@ def main():
    
     # In[3]:
    
-   time.sleep(20)
+    time.sleep(20)
    
     polish_companies_bankruptcy = fetch_ucirepo(id=365)
 
