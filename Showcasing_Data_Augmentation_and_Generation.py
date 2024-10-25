@@ -26,6 +26,7 @@ warnings.filterwarnings("ignore")
 
 
 def main():
+    print("")
     print("The goal here is to showcase the advantages of data augmentation and generation on")
     print("dataset models with issues that prevent them from being ideal for training prediction")
     print("models on. Consider the below set:")
@@ -34,7 +35,7 @@ def main():
    
     # In[3]:
    
-   
+   time.sleep(20)
    
     polish_companies_bankruptcy = fetch_ucirepo(id=365)
 
@@ -44,6 +45,7 @@ def main():
     targets = polish_companies_bankruptcy.data.targets["class"]
     targets = targets[df.index]
 
+    print("dataframe head:")
     print(df.head())
     print("number of rows: ", len(df))
     print("")
@@ -75,19 +77,27 @@ def main():
    
    
     #percentage of the above values. Notice how greatly imbalanced the two targets are.
-    targets.value_counts()/len(targets) 
+    print("percentages of bankruptcy(1) and non-bankruptcy(0) values:")
+    print(targets.value_counts()/len(targets))
+    print("")
+
+    time.sleep(15)
    
-   
-    # The imbalance between the labels will prove to be an issue in predictions. Now let's split the data set as follows:
-    # 
-    # - ~ 20% testing
-    # - ~ 80% training
-    #     - ~ 80% training
-    #     - ~ 20% validation
-   
-    # In[7]:
-   
-   
+    print("The imbalance between the labels will prove to be an issue in predictions. Now let's split the data set as follows:")
+     
+    print(" - ~ 20% testing")
+    print(" - ~ 80% training")
+    print("    - ~ 80% training")
+    print("     - ~ 20% validation")
+    print("")
+    print("So we do an 80-20 train-test split on the full data than another 80-20 split on the train data for the training")
+    print("and validation split.")
+    print("")
+    print("")
+
+    time.sleep(15)
+
+      
     X = df
     y = targets
     X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
@@ -97,13 +107,14 @@ def main():
     # In[8]:
    
    
-    X_train.head()
    
-   
-    # We'll use the accuracy, precision, recall, and the f1-score to determine the performance of each model. Our reason will be listed below when determining the base model performance without any data augmentation
+    print("We'll use the accuracy, precision, recall, and the f1-score to determine the performance of each model. Our reason")
+    print("for these measurers will be listed below when determining the base model performance without any data augmentation")
+    print("")
    
     # In[9]:
-   
+
+    time.sleep(10)
    
     #accuracy score checker
     def accuracy(predictions, true_y):
@@ -137,8 +148,12 @@ def main():
         return precision, recall, f1_score
    
    
-    # First let's try out a basic logistic regression model:
-   
+    print("First let's try out a basic logistic regression model to get an idea of what the baseline results")
+    print("on the measurers will be:")
+    print("")
+
+
+    time.sleep(10)
     # In[10]:
    
    
@@ -150,7 +165,7 @@ def main():
     # In[11]:
    
    
-    #Validation set result:
+    print("Validation set results:")
     acc_valid = accuracy(pred_valid, y_valid)
     precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
     print("Accuracy: ", acc_valid)
@@ -158,61 +173,81 @@ def main():
     print("Recall: ", recall_valid)
     print("f1_score: ", f1_score_valid)
    
-   
+
+    time.sleep(10)
     # In[12]:
    
-   
-    #Test set result:
+    print("")
+    print("Test set result:")
     acc_test = accuracy(pred_test, y_test)
     precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
     print("Accuracy: ", acc_test)
     print("Precision: ", precision_test)
     print("Recall: ", recall_test)
-    print("f1_score: ", f1_score_test) 
+    print("f1_score: ", f1_score_test)
+    print("")
+
+    time.sleep(10)
    
-   
-    # Our accuracy seems really high but the rest of our performance measurers are at 0! What happened?
+    print("Our accuracy seems really high but the rest of our performance measurers are at 0! What happened?")
    
     # In[13]:
+
+    time.sleep(10)
+
+    print("")
+    print("Let's try printing the number of positives that were predicted from both sets:")
+    print("Number of positives in valid: ", sum(pred_valid))
+    print("Number of positives in test: ", sum(pred_test))
+    print("")
+
+    time.sleep(15)
+    
    
-   
-    #printing the number of positives that were predicted from both sets:
-    sum(pred_valid), sum(pred_test)
-   
-   
-    # It seems like our model here had a strong preference for predicting non-bankruptcy on almost all of the predictions. That explains the very low precision and recall values respectively: the model we trained here is not great (frankly terrible) at predicting the bankruptcy values since it thinks better to just assume 0. This almost means we have 0 TPs, we didn't get any predictions on bankruptcy correct!. As such the the f1_score is pretty 0 due to the poor performance of the precision and recall scores.
+    print("It seems like our model here had a strong preference for predicting non-bankruptcy on almost all of")
+    print("the predictions. That explains the very low precision and recall values respectively: the model we trained") 
+    print("here is not great (frankly terrible) at predicting the bankruptcy values since it thinks better to just")
+    print("assume 0. This means we have 0 TPs, we didn't get any predictions on bankruptcy correct!") 
+    print("As such the the f1_score is pretty 0 due to the poor performance of the precision and recall scores.")
+    print("")
     # 
-    # Overall accuracy is very high, but we're a lot more interested in predicting the bankruptcy cases then the non bankruptcy cases. In that sense, our base model is a failure. Now what if we applied some data augmentation methods?
+    print("Overall accuracy is very high, but we're a lot more interested in predicting the bankruptcy cases then the non-bankruptcy cases.") 
+    print("In that sense, our base model is a failure. Now what if we applied some data augmentation methods?")
+    print("")
+
+    time.sleep(30)
    
-    # # SMOTE (Synthetic Minority Over-sampling Technique)
-   
-    # SMOTE works to help increase the imbalance between the number of classes. It works as follows:
-    #  1. Make note of the values that are part of the class with fewer values contained (in this case, the bankruptcy cases)
-    #  
-    #  2. Run k-nearest neighbors on a bankruptcy value (think vectors) and selecting a random batch of these neighbors to generate synthetic values whose features lie between the original value and the neighbor value, repeatedly for each bankruptcy point
-    #  
-    #  3. Add these new synthetic values to the dataset to bolster the bankruptcy cases
-    #  
-    # This seems problematic at a glance but let's see how it works:
-    # (make note of the increased sample size below with SMOTE)
-   
-    # In[14]:
-   
+    print("SMOTE (Synthetic Minority Over-sampling Technique)")
+    print("")
+
+    print("SMOTE works to help increase the imbalance between the number of classes. It works as follows:")
+    print("1. Make note of the values that are part of the class with fewer values contained (in this case, the bankruptcy cases")
+    print("")
+    print("2. Run k-nearest neighbors on a bankruptcy value (think vectors) and selecting a random batch of these neighbors to") 
+    print("generate synthetic values whose features lie between the original value and the neighbor value, repeatedly for each bankruptcy point.")
+    print("")
+    print("3. Add these new synthetic values to the dataset to bolster the bankruptcy cases")
+    print("")
+    time.sleep(15)
+    print("This method seems problematic at a glance but let's see how it works. We've ran the data behind the scenes, but if you're curious how it looks,")
+    print("check out our code file directly. First let's see how the sample has increased in data:")
+    print("")
+
    
     from imblearn.over_sampling import SMOTE
    
     smote = SMOTE(sampling_strategy='auto')
     X_resampled_train, y_resampled_train = smote.fit_resample(X_train, y_train)
    
-    print("Print X_train length", len(X_train))
-    print("Print resampled X_train length", len(X_resampled_train))
+    print("Previous train data length", len(X_train))
+    print("Resampled train data length", len(X_resampled_train))
+    print("")
    
-    X_resampled_train.head()
+    time.sleep(15)
    
    
-    # Let's try running a model here now:
-   
-    # In[15]:
+    print("Let's try running a model here now:")
+    print("")
    
    
     logistic_mod_smote = linear_model.LogisticRegression().fit(X_resampled_train,y_resampled_train)
@@ -220,54 +255,66 @@ def main():
     pred_test = logistic_mod_smote.predict(X_test)
    
    
-    # In[16]:
-   
-   
-    #Validation set result:
+    print("Validation set result:")
     acc_valid = accuracy(pred_valid, y_valid)
     precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
     print("Accuracy: ", acc_valid)
     print("Precision: ", precision_valid)
     print("Recall: ", recall_valid)
     print("f1_score: ", f1_score_valid)
+    print("")
    
-   
-    # In[17]:
-   
-   
-    #Test set result:
+    print("Test set result:")
     acc_test = accuracy(pred_test, y_test)
     precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
     print("Accuracy: ", acc_test)
     print("Precision: ", precision_test)
     print("Recall: ", recall_test)
     print("f1_score: ", f1_score_test)
+    print("")
+
+    time.sleep(15)
    
    
-    # Our accuracy dropped in the validation and test but we don't have 0 values for any of the other measurers anymore! Recall went up significantly, so we're clearly able to better indicate most of the bankruptcy cases in either set but our precision is still pretty small. We can figure out what happened here by checking the value counts of how many bankruptcy cases we really have in both sets:
+    print("Our accuracy dropped in the validation and test but we don't have 0 values for any of the other measurers anymore!")
+    print("Recall went up significantly, so we're clearly able to better indicate most of the bankruptcy cases in either set but")
+    print("our precision is still pretty small. We can figure out what happened here by checking the value counts of how many")
+    print("bankruptcy cases we really have in both sets:")
+    print("")
    
     # In[18]:
    
-   
-    sum(pred_valid), sum(y_valid)
+    print("number of positives in validation predictions vs real validation values:")   
+    print(sum(pred_valid), sum(y_valid))
+    print("")
    
    
     # In[19]:
    
-   
+    print("number of positives in test predictions vs real test values:")  
     sum(pred_test), sum(y_test)
+    print("")
+   
+    print("Now we can see we did end up inflating the number of bankruptcy predictions we made but by too much!") 
+    print("We have more than 10 times the number of actual bankruptcy cases here in the predictions. That explains")
+    print("why our precision is so low still, we're having issues truly predicting one that would exist in an unknown")
+    print("set in comparison to just finding the one in our given test/validation set here. This is to be expected since")
+    print("SMOTE also introduced a lot of noise here which is why we saw such an increase in bankruptcy predictions for our model.")
+    print("")  
+
+    time.sleep(30)
+    
+    print("Noise Injection to features:")
+    print("")  
+   
+    print("The technique sounds exactly as it describes; we're introducing a certain amount of noise to our features") 
+    print("that we train in. This sounds like a negative practice at first but in reality, the model we train learns") 
+    print("the noise as a sort of invariability to the data which helps out the imbalance class issues we have here.")
+    print("")
+
    
    
-    # Now we can see we did end up inflating the number of bankruptcy predictions we made but by too much! We have more than 10 times the number of actual bankruptcy cases here in the predictions. That explains why our precision is so low still, we're having issues truly predicting one that would exist in an unknown set in comparison to just finding the one in our given test/validation set here. This is to be expected since SMOTE also introduced a lot of noise here which is why we saw such an increase in bankruptcy predictions for our model.
-   
-    # # Noise Injection to features
-   
-    # The technique sounds exactly as it describes; we're introducing a certain amount of noise to our features that we train in. This sounds like a negative practice at first but in reality, the model we train learns the noise as a sort of invariability to the data which helps out the imbalance class issues we have here
-   
-    # In[20]:
-   
-   
-    import numpy as np
+    #import numpy as np
    
     # Injecting Gaussian noise (mean=0, standard deviation=1)
     noise_factor = 1000 #0.01, 0.1, 1, 10, 100, 1000
