@@ -2,6 +2,11 @@
 
 
 ### To do:
-1. Convert Baseline showcase code to python file and try out build scripts with it
+1. Edit baseline to be presentatable in running
 
-2. import leafy spurge dataset
+2. Include output logging via running
+
+3. import leafy spurge dataset
+
+
+### Running the baseline code:
