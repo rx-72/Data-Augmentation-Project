@@ -21,3 +21,10 @@
        install -r requirements.txt
 
 4. Run the baselien code via "python run_baseline.py"
+
+### Downloading the VOC dataset
+1. Navigate into the datasets folder within the project using the cd command
+cd Data_Augmentation_Project/datasets
+
+2. Download the VOC 2012 dataset into the datasets folder.
+wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
