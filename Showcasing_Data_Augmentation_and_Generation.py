@@ -29,14 +29,15 @@ def main():
     print("")
     print("The goal here is to showcase the advantages of data augmentation and generation on")
     print("dataset models with issues that prevent them from being ideal for training prediction")
-    print("models on. Consider the below set:")
+    print("models on.")
     print("")
     # 
    
     # In[3]:
    
-    time.sleep(20)
-   
+    time.sleep(15)
+
+    print("Consider the below set:")
     polish_companies_bankruptcy = fetch_ucirepo(id=365)
 
 
@@ -173,8 +174,6 @@ def main():
     print("Recall: ", recall_valid)
     print("f1_score: ", f1_score_valid)
    
-
-    time.sleep(10)
     # In[12]:
    
     print("")
@@ -187,13 +186,14 @@ def main():
     print("f1_score: ", f1_score_test)
     print("")
 
-    time.sleep(10)
-   
-    print("Our accuracy seems really high but the rest of our performance measurers are at 0! What happened?")
-   
-    # In[13]:
+    time.sleep(2)
 
+    print("Our accuracy seems really high but the rest of our performance measurers are at 0! What happened?")
+    
     time.sleep(10)
+   
+
+    # In[13]:
 
     print("")
     print("Let's try printing the number of positives that were predicted from both sets:")
@@ -211,11 +211,12 @@ def main():
     print("As such the the f1_score is pretty 0 due to the poor performance of the precision and recall scores.")
     print("")
     # 
-    print("Overall accuracy is very high, but we're a lot more interested in predicting the bankruptcy cases then the non-bankruptcy cases.") 
-    print("In that sense, our base model is a failure. Now what if we applied some data augmentation methods?")
+    print("Overall accuracy is very high, but we're a lot more interested in predicting the bankruptcy cases") 
+    print("then the non-bankruptcy cases. In that sense, our base model is a failure. Now what if we") 
+    print("applied some data augmentation methods?")
     print("")
 
-    time.sleep(30)
+    time.sleep(15)
    
     print("SMOTE (Synthetic Minority Over-sampling Technique)")
     print("")
@@ -228,7 +229,6 @@ def main():
     print("")
     print("3. Add these new synthetic values to the dataset to bolster the bankruptcy cases")
     print("")
-    time.sleep(15)
     print("This method seems problematic at a glance but let's see how it works. We've ran the data behind the scenes, but if you're curious how it looks,")
     print("check out our code file directly. First let's see how the sample has increased in data:")
     print("")
@@ -243,7 +243,7 @@ def main():
     print("Resampled train data length", len(X_resampled_train))
     print("")
    
-    time.sleep(15)
+    time.sleep(20)
    
    
     print("Let's try running a model here now:")
@@ -281,7 +281,8 @@ def main():
     print("our precision is still pretty small. We can figure out what happened here by checking the value counts of how many")
     print("bankruptcy cases we really have in both sets:")
     print("")
-   
+
+    time.sleep(10)
     # In[18]:
    
     print("number of positives in validation predictions vs real validation values:")   
@@ -292,9 +293,11 @@ def main():
     # In[19]:
    
     print("number of positives in test predictions vs real test values:")  
-    sum(pred_test), sum(y_test)
+    print(sum(pred_test), sum(y_test))
     print("")
-   
+
+    time.sleep(5)
+    
     print("Now we can see we did end up inflating the number of bankruptcy predictions we made but by too much!") 
     print("We have more than 10 times the number of actual bankruptcy cases here in the predictions. That explains")
     print("why our precision is so low still, we're having issues truly predicting one that would exist in an unknown")
@@ -302,7 +305,7 @@ def main():
     print("SMOTE also introduced a lot of noise here which is why we saw such an increase in bankruptcy predictions for our model.")
     print("")  
 
-    time.sleep(30)
+    time.sleep(15)
     
     print("Noise Injection to features:")
     print("")  
@@ -310,10 +313,12 @@ def main():
     print("The technique sounds exactly as it describes; we're introducing a certain amount of noise to our features") 
     print("that we train in. This sounds like a negative practice at first but in reality, the model we train learns") 
     print("the noise as a sort of invariability to the data which helps out the imbalance class issues we have here.")
+    print("The amount of noise generated is randomized and produced via a gaussian distribution.")
     print("")
 
-   
-   
+   time.sleep(10)
+
+    print("Training the model under this method, we get the results below:")
     #import numpy as np
    
     # Injecting Gaussian noise (mean=0, standard deviation=1)
@@ -335,28 +340,34 @@ def main():
     # In[22]:
    
    
-    #Validation set result:
+    print("Validation set result:")
     acc_valid = accuracy(pred_valid, y_valid)
     precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
     print("Accuracy: ", acc_valid)
     print("Precision: ", precision_valid)
     print("Recall: ", recall_valid)
     print("f1_score: ", f1_score_valid)
-   
+    print("")
    
     # In[23]:
    
    
-    #Test set result:
+    print("Test set result:")
     acc_test = accuracy(pred_test, y_test)
     precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
     print("Accuracy: ", acc_test)
     print("Precision: ", precision_test)
     print("Recall: ", recall_test)
     print("f1_score: ", f1_score_test)
+    print("")
    
-   
-    # On the plus side, noise factor doesn't inflate the sample set as as hard SMOTE but the result improvements are much scale in comparison. We didn't see that much improvement in recall as we did previously, though we did improve precision about the same amount and accuracy wasn't reduced as severely. It's best to not rely solely on Noise Injection to fix this imbalance
+    time.sleep(10)
+
+    print("On the plus side, noise factor doesn't inflate the sample set as as hard SMOTE but the result improvements") 
+    print("are much scale in comparison. We didn't see that much improvement in recall as we did previously, though")
+    print("we did improve precision about the same amount and accuracy wasn't reduced as severely. It's best to not rely")
+    print("solely on Noise Injection to fix this imbalance")
+    print("")
    
     # # Feature Augmentation
    
