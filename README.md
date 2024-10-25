@@ -28,3 +28,16 @@ cd Data_Augmentation_Project/datasets
 
 2. Download the VOC 2012 dataset into the datasets folder.
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
+
+### Downloading the Leafy Spurge Dataset
+1. Make sure you have datasets library installed, use the terminal command:
+pip install datasets
+
+2. Use the following commands to load the Context and Crop subsets of the Leafy Spurge dataset:
+
+from datasets import load_dataset
+
+ds_context = load_dataset("mpg-ranch/leafy_spurge", "context")
+
+ds_crop = load_dataset("mpg-ranch/leafy_spurge", "crop")
+
