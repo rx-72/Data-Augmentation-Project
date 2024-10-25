@@ -368,62 +368,78 @@ def main():
     print("we did improve precision about the same amount and accuracy wasn't reduced as severely. It's best to not rely")
     print("solely on Noise Injection to fix this imbalance")
     print("")
+
+    time.sleep(20)
+    print("Feature Augmentation")
+    print("")
    
-    # # Feature Augmentation
+    print("Sometimes our data feature may have inherent relationships between one another that may not necessarily be clear")
+    print("and/or easy to fit to the data classes. For example there may not exist direct features that can 1 to 1 predict")
+    print("whether a bank data value will become bankrupt in the future or not but what if there was some complex mathematical")
+    print("combination of features that we could discover that could do so? This can prove useful to predicting data with")
+    print("little correlations to features but can be time intensive due to the number of potential combinations one must")
+    print("test along with the expansion of new feature columns to each data value.")
+    print("")
    
-    # Sometimes our data feature may have inherent relationships between one another that may not necessarily be clear and/or easy to fit to the data classes. For example there may not exist direct features that can 1 to 1 predict whether a bank data value will become bankrupt in the future or not but what if there was some complex mathematical combination of features that we could discover that could do so? This can prove useful to predicting data with little correlations to features but can be time intensive due to the number of potential combinations one must test along with the expansion of new feature columns to each data value.
+
+    print("Let's generate interaction terms and polynomial features (degree=2 for pairwise interactions) for our model and try it out")
+    time.sleep(15)
    
-    # In[24]:
-   
-   
-   
-   
-    # Generate interaction terms and polynomial features (degree=2 for pairwise interactions)
     poly = PolynomialFeatures(degree=2, include_bias=False)
     X_train_poly = poly.fit_transform(X_train)
     X_valid_poly = poly.fit_transform(X_valid)
     X_test_poly = poly.fit_transform(X_test)
-   
-   
-    # In[25]:
     
     
     logistic_mod_feature = linear_model.LogisticRegression().fit(X_train_poly,y_train)
     pred_valid = logistic_mod_feature.predict(X_valid_poly)
     pred_test = logistic_mod_feature.predict(X_test_poly)
    
-   
-    # In[26]:
     
-    
-    #Validation set result:
+    print("")
+    print("Validation set result:")
     acc_valid = accuracy(pred_valid, y_valid)
     precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
     print("Accuracy: ", acc_valid)
     print("Precision: ", precision_valid)
     print("Recall: ", recall_valid)
     print("f1_score: ", f1_score_valid)
-   
+    print("")
    
     # In[27]:
    
    
-    #Test set result:
+    print("Test set result:")
     acc_test = accuracy(pred_test, y_test)
     precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
     print("Accuracy: ", acc_test)
     print("Precision: ", precision_test)
     print("Recall: ", recall_test)
     print("f1_score: ", f1_score_test)
+    print("")
     
+    print("Based on the results here, it seems we could find any combination of polynomial functions to the 2nd degree that")
+    print("could help improve our measurers here in comparison to our other two methods. Due to the longer run time here, we")
+    print("likely shouldn't focus too much on this method if our improvements were barely made for longer time taken.")
+    print("")
+
+    time.sleep(30)
     
-    # Based on the results here, it seems we could find any combination of polynomial functions to the 2nd degree that could help improve our measurers here in comparison to our other two methods. Due to the longer run time here, we likely shouldn't focus too much on this method if our improvements were barely made for longer time taken. 
+    print("Targeted Undersampling (for Class Balance)")
+    print("")
     
-    # # Targeted Undersampling (for Class Balance)
-    
-    # Similar to how SMOTE creates more of the minority classes values, we can also a data augmentation technique to reduce the amount of majority class values to help with imbalance. The concepts and ideas are generally the same with similar pros and cons. Here we use the RandomUnderSampler which chooses a random subset of points from the majority class to be removed. Note this is the main difference to something like SMOTE which increases the number of values wheareas here we decrease them.
-    
+    print("Similar to how SMOTE creates more of the minority classes values, we can also a data augmentation technique")
+    print("to reduce the amount of majority class values to help with imbalance. The concepts and ideas are generally")
+    print("the same with similar pros and cons. Here we use the RandomUnderSampler which chooses a random subset of points")
+    print("from the majority class to be removed. Note this is the main difference to something like SMOTE which increases")
+    print("the number of values wheareas here we decrease them.")
+    print("")
+
+    time.sleep(15)
     # In[28]:
+
+    print("Let's try a model on this:")
+    print("")
     
     
     rus = RandomUnderSampler(random_state=42)
@@ -435,36 +451,46 @@ def main():
     
     # In[29]:
     
-    
-    print(len(X_train))
-    print(len(X_train_resampled))
-    
+    print("Comparing data sizes before and after resampling":)
+    print("Original train data length", len(X_train))
+    print("Resampled train data length", len(X_train_resampled))
+    print("")
+
+    time.sleep(10)
     
     # In[30]:
     
     
-    #Validation set result:
+    print("Validation set result:")
     acc_valid = accuracy(pred_valid, y_valid)
     precision_valid, recall_valid, f1_score_valid = precision_recall_F1_score(pred_valid, y_valid) 
     print("Accuracy: ", acc_valid)
     print("Precision: ", precision_valid)
     print("Recall: ", recall_valid)
     print("f1_score: ", f1_score_valid)
+    print("")
     
     
     # In[31]:
     
     
-    #Test set result:
+    print("Test set result")
     acc_test = accuracy(pred_test, y_test)
     precision_test, recall_test, f1_score_test = precision_recall_F1_score(pred_test, y_test) 
     print("Accuracy: ", acc_test)
     print("Precision: ", precision_test)
     print("Recall: ", recall_test)
     print("f1_score: ", f1_score_test)
+    print("")
+
+    time.sleep(10)
     
-    
-    # Interestingly, it seems the results here are quite similar to what was achieved with SMOTE. We have a very much improved recall but we're making a lot more incorrect predictions for bankruptcy still, and we have a reduction in accuracy as well.
+    print("Interestingly, it seems the results here are quite similar to what was achieved with SMOTE.")
+    print("We have a very much improved recall but we're making a lot more incorrect predictions for bankruptcy") 
+    print("still, and we have a reduction in accuracy as well.")
+    print("")
+
+    time.sleep(10)
     
     # # Combined Techniques
     # 
