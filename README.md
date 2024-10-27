@@ -8,6 +8,30 @@
 
 3. import leafy spurge dataset
 
+# Zorro download:
+https://anonymous.4open.science/r/Zorro-C8F3/micro_bench_test.ipynb
+
+Recommended system requirements: 8 cpu, 16 GM RAM on dsmlp
+(Note all below runtimes are assuming these requirements, can run faster with better systems)
+
+## mpg-robustness-certification
+Runs ZORRO on mpg train dataset after injecting errors. Errors include uncertain labels (whose performance is compared to "Meyer et al.") and uncertain features. Performance testing is based off of robustnest measurement of the final dataset. Also runs with a regularization parameter for both uncertain labels and features comparing robustness ratio result and worst case loss under given regularization parameter.
+
+MPG dataset shape: 398 rows by 7 columns, 318 rows go to training and 80 rows for testing
+
+### Running uncertain labels (Zorro and "Meyer et al"):
+Zorro: 10 min.
+"Meyer et al": 3 min.
+Total: 13 - 14 min.
+
+### Running uncertain features (Zorro):
+Zorro: 50 min.
+
+### Regularization uncertain labels (Zorro):
+Zorro: 1h 30 min.
+
+### Regularization uncertain features (Zorro):
+Zorro: 3h 39 min.
 
 ### Running the baseline code:
 
@@ -22,22 +46,5 @@
 
 4. Run the baseline code via "python run_baseline.py"
 
-### Downloading the VOC dataset
-1. Navigate into the datasets folder within the project using the cd command
-cd Data_Augmentation_Project/datasets
 
-2. Download the VOC 2012 dataset into the datasets folder.
-wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
-
-### Downloading the Leafy Spurge Dataset
-1. Make sure you have datasets library installed, use the terminal command:
-pip install datasets
-
-2. Use the following commands to load the Context and Crop subsets of the Leafy Spurge dataset:
-
-from datasets import load_dataset
-
-ds_context = load_dataset("mpg-ranch/leafy_spurge", "context")
-
-ds_crop = load_dataset("mpg-ranch/leafy_spurge", "crop")
 
