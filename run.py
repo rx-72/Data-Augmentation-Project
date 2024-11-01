@@ -1,8 +1,13 @@
 import os
 import json
+import pandas as pd
 import argparse
 import matplotlib.pyplot as plt
 from etl import *
+
+with open("data-params.json", "r") as f:
+  params = json.load(f)
+
 
 def run_baseline_test(X_train, y_train, output_dir):
   robustness_dicts = []
@@ -165,4 +170,32 @@ def run_baseline_test(X_train, y_train, output_dir):
   plt.subplots_adjust(wspace=0.2, bottom=0.2, left=0.1, right=0.9)
   cb = fig.colorbar(heatmap2, ax=(ax1, ax2), orientation='vertical', pad=0.02)
   cb.set_label('Robustness Ratio (%)', fontsize=12)
-  plt.savefig('breast-cancer-baseline-label-heatmap.pdf', bbox_inches='tight')
+  plt.savefig(f"{output_dir}/breast-cancer-baseline-label-heatmap.pdf", bbox_inches='tight')
+  print("Baseline finished")
+
+# Main function to parse arguments
+def main():
+  # Argument parsing
+  parser = argparse.ArgumentParser(description="Run robustness tests")
+  parser.add_argument('--test', type=str, choices=['baseline', 'residuals', 'gopher'], default='baseline',
+                      help="Specify which test to run: (baseline, residuals, gopher)")
+  args = parser.parser.args()
+
+  # Set parameters
+  # set parameters
+  output_dir = params["output_dir"]
+  os.makedirs(output_dir, exist_ok=True)
+
+  # Load data
+  X_train, X_test, y_train, y_test = load_data(random_seed=params["random_seed"])
+
+  # run chosen test
+  if args.test == 'baseline':
+    run_baseline_test(X_train, y_train, outputdir)
+  else:
+    print("Not a test baseline")
+
+if __name__ == "__main__":
+  main()
+
+
