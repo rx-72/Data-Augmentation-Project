@@ -9,7 +9,7 @@ with open("data-params.json", "r") as f:
   params = json.load(f)
 
 
-def run_baseline_test(X_train, y_train, output_dir):
+def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
   print("Running baseline on ZORRO.")
   robustness_dicts = []
   for seed in range(5):
