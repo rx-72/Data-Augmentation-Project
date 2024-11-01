@@ -29,6 +29,7 @@ from dowhy import causal_estimators
 import dowhy.datasets
 from IPython.display import display, clear_output
 from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import load_breast_cancer
 
 # Config dict to set the logging level
 import logging.config
