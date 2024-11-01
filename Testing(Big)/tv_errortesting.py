@@ -553,7 +553,260 @@ for seed in tqdm(range(5), desc=f'Progress'):
             robustness_dict_interval[uncertain_pct].append(robustness_ratio)
     robustness_dicts_interval.append(robustness_dict_interval)
 
+end_time = time.time()
+
+execution_time = end_time - start_time
+print(f"Execution time: {execution_time} seconds")
+
+robustness_interval_mean = sum([pd.DataFrame(robustness_dicts_interval[i]).iloc[:, 2:] for i in range(5)])/5
+robustness_interval_std = (sum([(pd.DataFrame(robustness_dicts_interval[i]).iloc[:, 2:]-robustness_interval_mean)**2 for i in range(5)])/5).apply(np.sqrt)
+robustness_zonotope_mean = sum([pd.DataFrame(robustness_dicts[i]).iloc[:, 2:] for i in range(5)])/5
+robustness_zonotope_std = (sum([(pd.DataFrame(robustness_dicts[i]).iloc[:, 2:]-robustness_zonotope_mean)**2 for i in range(5)])/5).apply(np.sqrt)
+
+
+#------------------------------------------------------------
+#------------------------------------------------------------
+#------------------------------------------------------------
+#HEATMAP PLOT
+#------------------------------------------------------------
+#------------------------------------------------------------
+#------------------------------------------------------------
+
+
+# Heatmaps
+df = robustness_interval_mean
+
+# Isolate the portion of the DataFrame for heatmap (exclude the first two columns)
+heatmap_data = df.multiply(100).values  # Convert fractions to percentages
+
+# Labels for x-axis and y-axis
+x_labels = df.columns.tolist()
+y_labels = [0.02, 0.04, 0.06, 0.08]
+
+# Create the heatmap plot
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 4), sharey=True, dpi=200)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 3), dpi=200)
+# cmap = plt.get_cmap("coolwarm")
+cmap = plt.get_cmap("autumn_r")
+heatmap = ax1.imshow(heatmap_data, cmap=cmap, interpolation='nearest', aspect='auto', 
+                     alpha=0.8, vmin=0, vmax=100)
+
+# Add color bar
+# cbar = plt.colorbar(heatmap, ax=ax1)
+# cbar.set_label('% Percentage')
+
+# Add white lines by adjusting the linewidth for minor ticks to create separation
+ax1.set_xticks(np.arange(len(x_labels)) - 0.5, minor=True)
+ax1.set_yticks(np.arange(len(y_labels)) - 0.5, minor=True)
+ax1.grid(which="minor", color="white", linestyle='-', linewidth=0.5)
+ax1.tick_params(which="minor", size=0)
+
+# Set major ticks for labels without ticks
+ax1.set_xticks(np.arange(len(x_labels)))
+ax1.set_yticks(np.arange(len(y_labels)))
+ax1.set_xticklabels(x_labels)
+ax1.set_yticklabels(y_labels)
+ax1.tick_params(axis='both', which='both', length=0)  # Remove tick marks
+
+# Remove external boundaries
+ax1.spines['top'].set_visible(False)
+ax1.spines['right'].set_visible(False)
+ax1.spines['left'].set_visible(False)
+ax1.spines['bottom'].set_visible(False)
+
+# Set axis labels
+ax1.set_xlabel('Percentage of Uncertain Data', fontsize=12)
+ax1.set_ylabel('Uncertain Radius (%)', fontsize=12)
+
+# Add text annotations
+for i in range(len(y_labels)):
+    for j in range(len(x_labels)):
+        if heatmap_data[i][j]==100:
+            text = ax1.text(j, i, f'{heatmap_data[i][j]:.0f}', ha='center', va='center', color='black')
+        elif heatmap_data[i][j]==0:
+            text = ax1.text(j, i, '0', ha='center', va='center', color='black')
+        else:
+            text = ax1.text(j, i, f'{heatmap_data[i][j]:.1f}', ha='center', va='center', color='black')
+ax1.set_title('Meyer et al.')
+
+df = robustness_zonotope_mean
+
+# Isolate the portion of the DataFrame for heatmap (exclude the first two columns)
+heatmap_data = df.multiply(100).values  # Convert fractions to percentages
+heatmap2 = ax2.imshow(heatmap_data, cmap=cmap, interpolation='nearest', 
+                      aspect='auto', alpha=0.8, vmin=0, vmax=100)
+
+# Add color bar
+# cbar.set_label('% Percentage')
+
+# Add white lines by adjusting the linewidth for minor ticks to create separation
+ax2.set_xticks(np.arange(len(x_labels)) - 0.5, minor=True)
+ax2.set_yticks(np.arange(len(y_labels)) - 0.5, minor=True)
+ax2.grid(which="minor", color="white", linestyle='-', linewidth=0.5)
+ax2.tick_params(which="minor", size=0)
+
+# Set major ticks for labels without ticks
+ax2.set_xticks(np.arange(len(x_labels)))
+ax2.set_yticks(np.arange(len(y_labels)))
+ax2.set_xticklabels(x_labels)
+ax2.set_yticklabels(y_labels)
+ax2.tick_params(axis='both', which='both', length=0)  # Remove tick marks
+
+# Remove external boundaries
+ax2.spines['top'].set_visible(False)
+ax2.spines['right'].set_visible(False)
+ax2.spines['left'].set_visible(False)
+ax2.spines['bottom'].set_visible(False)
+
+# Set axis labels
+ax2.set_xlabel('Percentage of Uncertain Data', fontsize=12)
+ax2.set_ylabel('Uncertain Radius (%)', fontsize=12)
+
+# Add text annotations
+for i in range(len(y_labels)):
+    for j in range(len(x_labels)):
+        if heatmap_data[i][j]==100:
+            text = ax2.text(j, i, '100', ha='center', va='center', color='black')
+        elif heatmap_data[i][j]==0:
+            text = ax2.text(j, i, '0', ha='center', va='center', color='black')
+        else:
+            text = ax2.text(j, i, f'{np.around(heatmap_data[i][j], 1)}', ha='center', 
+                            va='center', color='black')
+ax2.set_title('ZORRO')
+
+# fig.suptitle('Robustness Ratio (%)', fontsize=14)
+plt.subplots_adjust(wspace=0.2, bottom=0.2, left=0.1, right=0.9)
+cb = fig.colorbar(heatmap2, ax=(ax1, ax2), orientation='vertical', pad=0.02)
+cb.set_label('Robustness Ratio (%)', fontsize=12)
+plt.savefig('bigtv_shows-heatmap.pdf', bbox_inches='tight')
 
 
 
 
+
+#------------------------------------------------------------
+#------------------------------------------------------------
+#------------------------------------------------------------
+#Label error lineplot
+#------------------------------------------------------------
+#------------------------------------------------------------
+#------------------------------------------------------------
+
+print("\n robustness_zonotope_mean: ")
+print(robustness_zonotope_mean)
+
+uncertain_pcts = np.array([0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1])*100
+uncertain_radius_ratios = [0.02, 0.04, 0.06, 0.08]
+
+zonotope_data_mean_dict = dict()
+zonotope_data_std_dict = dict()
+for i, radius_ratio in enumerate(uncertain_radius_ratios):
+    zonotope_data_mean_dict[radius_ratio] = np.append([1], robustness_zonotope_mean.iloc[i, :].to_numpy())
+    zonotope_data_std_dict[radius_ratio] = np.append([0], robustness_zonotope_std.iloc[i, :].to_numpy())
+
+interval_data_mean_dict = dict()
+interval_data_std_dict = dict()
+for i, radius_ratio in enumerate(uncertain_radius_ratios):
+    interval_data_mean_dict[radius_ratio] = np.append([1], robustness_interval_mean.iloc[i, :].to_numpy())
+    interval_data_std_dict[radius_ratio] = np.append([0], robustness_interval_std.iloc[i, :].to_numpy())
+    
+fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(12, 2), sharex=True, dpi=200)
+
+for i in range(4):
+    uncertain_radius_ratio = uncertain_radius_ratios[i]
+    axes[i].errorbar(uncertain_pcts, zonotope_data_mean_dict[uncertain_radius_ratio],
+                     yerr=3*zonotope_data_std_dict[uncertain_radius_ratio],
+                     marker='o', color='red', label='ZORRO', linestyle='-')
+    axes[i].errorbar(uncertain_pcts, interval_data_mean_dict[uncertain_radius_ratio],
+                     yerr=3*interval_data_std_dict[uncertain_radius_ratio],
+                     marker='s', color='green', label='Meyer et al.', linestyle='--')
+    axes[i].set_title(f'Uncertainty Radius: {int(uncertain_radius_ratio*100)} %')
+    if i == 0:
+        axes[i].set_ylabel('Robustness Ratio', fontsize=12)
+    axes[i].set_ylim(-0.05, 1.05)
+    axes[i].grid(True)
+
+# Adjust layout
+lines_labels = [axes[0].get_legend_handles_labels()]
+lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
+fig.legend(lines, labels, loc = (0.73, 0.03), ncol=2, frameon=False)
+
+plt.subplots_adjust(wspace=0.2, top=0.8, bottom=0.25, left=0.1, right=0.9)
+fig.supxlabel('Uncertain Data Percentage (%)', fontsize=12, verticalalignment='bottom')
+# plt.tight_layout()
+# plt.show()
+plt.savefig('bigtv_shows-labels-lineplot.pdf', bbox_inches='tight')
+
+start_time = time.time()
+
+robustness_dicts = []
+for seed in tqdm(range(5), desc=f'Progress'):
+    robustness_radius = 100
+    weight_interval = X_train.rating.max()-X_train.rating.min()
+    uncertain_radius_ratios = [0.04, 0.06, 0.08, 0.1]
+    uncertain_radiuses = [ratio*weight_interval for ratio in uncertain_radius_ratios]
+    uncertain_pcts = list(np.arange(1, 11)/100)
+    robustness_dict = dict()
+    robustness_dict['uncertain_radius'] = uncertain_radiuses
+    robustness_dict['uncertain_radius_ratios'] = uncertain_radius_ratios
+    for uncertain_pct in tqdm(uncertain_pcts, desc=f'Rep {seed+1}', leave=False):
+        robustness_dict[uncertain_pct] = list()
+        uncertain_num = int(uncertain_pct*len(y_train))
+        for uncertain_radius_ratio in tqdm(uncertain_radius_ratios, desc=f'Uncertain Data PCT: {uncertain_pct}', leave=False):
+            robustness_ratio = compute_robustness_ratio(X_train, y_train, X_test, y_test, 
+                                                        uncertain_attr='rating', 
+                                                        uncertain_num=uncertain_num, 
+                                                        uncertain_radius_ratio=uncertain_radius_ratio, 
+                                                        robustness_radius=robustness_radius)
+            if robustness_ratio==0:
+                trials_left = len(uncertain_radius_ratios)-uncertain_radius_ratios.index(uncertain_radius_ratio)
+                for _ in range(trials_left):
+                    robustness_dict[uncertain_pct].append(0)
+                break
+            robustness_dict[uncertain_pct].append(robustness_ratio)
+    robustness_dicts.append(robustness_dict)
+
+end_time = time.time()
+
+execution_time = end_time - start_time
+print(f"Execution time: {execution_time} seconds")
+
+from matplotlib.ticker import FormatStrFormatter
+
+uncertain_pcts = (np.array([0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1])*100)
+uncertain_radius_ratios = [0.06, 0.08, 0.10, 0.12]
+
+zonotope_data_mean_dict = dict()
+zonotope_data_std_dict = dict()
+for i, radius_ratio in enumerate(uncertain_radius_ratios):
+    zonotope_data_mean_dict[radius_ratio] = np.append([1], robustness_zonotope_mean.iloc[i, :].to_numpy())
+    zonotope_data_std_dict[radius_ratio] = np.append([0], robustness_zonotope_std.iloc[i, :].to_numpy())
+
+fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(12, 2), sharex=True, dpi=200)
+
+for i in range(4):
+    uncertain_radius = uncertain_radiuses[i]
+    uncertain_radius_ratio = uncertain_radius_ratios[i]
+    axes[i].errorbar(uncertain_pcts, zonotope_data_mean_dict[uncertain_radius_ratio],
+                     yerr=3*zonotope_data_std_dict[uncertain_radius_ratio],
+                     marker='o', color='red', label='ZORRO', linestyle='-')
+    radius_title = str(int(uncertain_radius_ratio*100))
+    if uncertain_radius_ratio == 0.1:
+        radius_title = '10'
+    axes[i].set_title(f'Uncertain Radius: {radius_title} %')
+    if i == 0:
+        axes[i].set_ylabel('Robustness Ratio', fontsize=12)
+    axes[i].set_ylim(-0.05, 1.05)
+    axes[i].xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+    axes[i].grid(True)
+
+# Adjust layout
+lines_labels = [axes[0].get_legend_handles_labels()]
+lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
+fig.legend(lines, labels, loc = (0.85, 0.03), ncol=2, frameon=False)
+
+plt.subplots_adjust(wspace=0.2, top=0.8, bottom=0.25, left=0.1, right=0.9)
+fig.supxlabel('Uncertain Data Percentage (%)', fontsize=12, verticalalignment='bottom')
+# plt.tight_layout()
+# plt.show()
+plt.savefig('bigtv_shows-features-lineplot.pdf', bbox_inches='tight')
