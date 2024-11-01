@@ -194,7 +194,7 @@ def main():
 
   # run chosen test
   if args.test == 'baseline':
-    run_baseline_test(X_train, y_train, outputdir)
+    run_baseline_test(X_train, y_train, output_dir)
   else:
     print("Not a test baseline")
 
