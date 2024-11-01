@@ -15,7 +15,9 @@ with open("data-params.json", "r") as f:
 
 
 def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
+  print("")
   print("Running baseline on ZORRO.")
+  print("")
   robustness_dicts = []
   for seed in range(5):
     # mpg +- 2 is robust
@@ -31,7 +33,7 @@ def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
         robustness_dict[uncertain_pct] = list()
         uncertain_num = int(uncertain_pct*len(y_train))
         for uncertain_radius in tqdm(uncertain_radiuses, desc=f'Varying Uncertain Radius'):
-            #print(uncertain_radius)
+
             robustness_ratio = compute_robustness_ratio_label_error(X_train, y_train, X_test, y_test, 
                                                                     uncertain_num=uncertain_num, 
                                                                     uncertain_radius=uncertain_radius, 
@@ -43,7 +45,9 @@ def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
   robustness_zonotope_mean = sum([pd.DataFrame(robustness_dicts[i]).iloc[:, 2:] for i in range(5)])/5
   robustness_zonotope_std = (sum([(pd.DataFrame(robustness_dicts[i]).iloc[:, 2:]-robustness_zonotope_mean)**2 for i in range(5)])/5).apply(np.sqrt)
 
+  print()
   print("Running baseline on Meyer.")
+  print()
   # Running results with parameter adjustments on Meyer
   robustness_dicts = []
   for seed in range(5):
@@ -178,12 +182,16 @@ def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
   cb = fig.colorbar(heatmap2, ax=(ax1, ax2), orientation='vertical', pad=0.02)
   cb.set_label('Robustness Ratio (%)', fontsize=12)
   plt.savefig(f"{output_dir}/breast-cancer-baseline-label-heatmap.pdf", bbox_inches='tight')
-  print("Baseline finished")
+  print("")
+  print("Baseline finished!")
+  print("")
 
 # Main function to parse arguments
 def main():
   # Argument parsing
+  print("")
   print("Grabbing Arguments...")
+  print("")
   parser = argparse.ArgumentParser(description="Run robustness tests")
   parser.add_argument('--test', type=str, choices=['baseline', 'residuals', 'gopher'], default='baseline',
                       help="Specify which test to run: (baseline, residuals, gopher)")
@@ -201,7 +209,9 @@ def main():
   if args.test == 'baseline':
     run_baseline_test(X_train, y_train, X_test, y_test, output_dir)
   else:
+    print("")
     print("Not a test baseline")
+    print("")
 
 if __name__ == "__main__":
   main()
