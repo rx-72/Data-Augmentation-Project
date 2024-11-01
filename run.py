@@ -10,6 +10,7 @@ with open("data-params.json", "r") as f:
 
 
 def run_baseline_test(X_train, y_train, output_dir):
+  Print("Running baseline on ZORRO.")
   robustness_dicts = []
   for seed in range(5):
     # mpg +- 2 is robust
@@ -37,6 +38,7 @@ def run_baseline_test(X_train, y_train, output_dir):
   robustness_zonotope_mean = sum([pd.DataFrame(robustness_dicts[i]).iloc[:, 2:] for i in range(5)])/5
   robustness_zonotope_std = (sum([(pd.DataFrame(robustness_dicts[i]).iloc[:, 2:]-robustness_zonotope_mean)**2 for i in range(5)])/5).apply(np.sqrt)
 
+  Print("Running baseline on Meyer.")
   # Running results with parameter adjustments on Meyer
   robustness_dicts = []
   for seed in range(5):
