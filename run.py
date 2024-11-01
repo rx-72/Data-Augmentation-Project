@@ -3,7 +3,12 @@ import json
 import pandas as pd
 import argparse
 import matplotlib.pyplot as plt
+import warnings
+from sklearn.exceptions import DataConversionWarning
 from etl import *
+
+warnings.filterwarnings('ignore')
+warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
 with open("data-params.json", "r") as f:
   params = json.load(f)
