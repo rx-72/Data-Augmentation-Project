@@ -178,10 +178,11 @@ def run_baseline_test(X_train, y_train, output_dir):
 # Main function to parse arguments
 def main():
   # Argument parsing
+  Print("Grabbing Arguments...")
   parser = argparse.ArgumentParser(description="Run robustness tests")
   parser.add_argument('--test', type=str, choices=['baseline', 'residuals', 'gopher'], default='baseline',
                       help="Specify which test to run: (baseline, residuals, gopher)")
-  args = parser.parser_args()
+  args = parser.parse_args()
 
   # Set parameters
   # set parameters
