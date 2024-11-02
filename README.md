@@ -1,50 +1,39 @@
-# Data-Augmentation-Project
+# Goal:
+Using ZORRO as test measure to determine the robustness of a dataset in response to worst case data uncertainty. By fine tuning the error injection and robustness models, we can determine the susceptibility of a dataset towards providing an incorrect representation of the ground truth. The promise of this research is the ability to not only determine a measure of how robust a given dataset is, but also develop a method to reverse engineer error uncertainty in datasets to capture the ground truth as close as possible
 
 
 ### To do:
-1. Edit baseline to be presentatable in running
+1. Add important index and sensitive label robust ratio function variant to "run.py"
 
-2. Include output logging via running
+2. Add dataset argument to parser
 
-3. import leafy spurge dataset
+3. Adjust function differences across different datasets and run on other included datasets
 
-# Zorro download:
-https://anonymous.4open.science/r/Zorro-C8F3/micro_bench_test.ipynb
+4. Incorate one drop function to find "important values" of training data using different metrics
 
-Recommended system requirements: 8 cpu, 16 GM RAM on dsmlp
-(Note all below runtimes are assuming these requirements, can run faster with better systems)
+5. Organize repo for presentation
 
-## mpg-robustness-certification
-Runs ZORRO on mpg train dataset after injecting errors. Errors include uncertain labels (whose performance is compared to "Meyer et al.") and uncertain features. Performance testing is based off of robustnest measurement of the final dataset. Also runs with a regularization parameter for both uncertain labels and features comparing robustness ratio result and worst case loss under given regularization parameter.
+6. Fix tqdm not showing up in terminal run
 
-MPG dataset shape: 398 rows by 7 columns, 318 rows go to training and 80 rows for testing
 
-### Running uncertain labels (Zorro and "Meyer et al"):
-Zorro: 10 min.
-"Meyer et al": 3 min.
-Total: 13 - 14 min.
 
-### Running uncertain features (Zorro):
-Zorro: 50 min.
+### Minimum recommended system requirements: 
+8 cpu, 16 GM RAM on dsmlp
 
-### Regularization uncertain labels (Zorro):
-Zorro: 1h 30 min.
+### How to run 
+1. Clone repository and change directory location to it (git clone -> cd)
+2. run "pip install -r requirements.txt"
+       a. May need to run "pip install --upgrade ipykernel" to be compatible for ipython 8.18.1
+3. run "python run.py --test baseline"
 
-### Regularization uncertain features (Zorro):
-Zorro: 3h 39 min.
+Runs baseline code robustness measurements on randomized seed of indexes for error injection followed by creating directory called ".../outputs/graph/" containing a heat map plot of resulting "uncertainty range X unceratinty size" robustness tests on Meyer. and ZORRO
 
-### Running the baseline code:
 
-1. Navigate to your terminal and clone repo via "git clone", then navigate to the repo via "cd"
+### References:
+https://gopher-sys.github.io/index.html#papers - Gopher source implementation
 
-2. "run.sh" is need to create the script environment. Run "chmod +x run.sh" to get "execute" permissions and then "./run.sh"
+https://arxiv.org/pdf/2405.18549 - ZORRO Basis and code reference paper
 
-3. (optional but recommended) create a virtual environment to run the code upon (similar to conda) by running the following code:
-       python -m venv venv
-       "source venv/bin/activate" (Macbook) / "venv\Scripts\activate" (Windows)
-       install -r requirements.txt
-
-4. Run the baseline code via "python run_baseline.py"
 
 
 
