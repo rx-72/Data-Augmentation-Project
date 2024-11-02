@@ -1,0 +1,83 @@
+## Gopher duplicate set up
+
+#if X_train_orig[col].dtype == 'object'
+#else np.percentile(X_train_orig[col], [25, 50, 75])        #Code to base numerical on percentiles if needed
+
+def find_important_patterns(X_train_orig, y_train_orig, clf, metric, sensitivity_threshold=0.05, method="update"):
+    important_indices = []
+    unique_values = {col: X_train_orig[col].unique() for col in X_train_orig.columns}
+    patterns = []
+    
+    for feature, values in unique_values.items(): #per dictionary items of "column: unique features"
+        for val in values: #for feature in unique features
+            if X_train_orig[feature].dtype == 'object':  # Categorical: equality check
+                pattern = (X_train_orig[feature] == val)
+            else:  # Numerical: threshold-based check
+                pattern = (X_train_orig[feature] > val)
+            patterns.append((pattern, feature, val))
+
+    unique_indices = {}        
+    
+    for pattern, feature, val in tqdm(patterns, desc='Evaluating pattern performance progress'):
+        
+        pattern_idx = pattern[pattern].index.intersection(X_train_orig.index)  # Ensures indices align with X_train_orig
+
+        # Clone data and update based on method
+        X_modified = X_train_orig.copy().reset_index(drop=True)  # Reset index for consistency
+        X_modified.loc[pattern_idx, feature] = X_modified[feature].mean() #imputation change (update based gopher)
+
+        # Compute metric sensitivity
+        y_pred = clf.predict_proba(X_modified)[:, 1]
+        original_metric_value = compute_metric(y_train_orig, clf.predict_proba(X_train_orig)[:, 1], X_train_orig, metric, feature)
+        updated_metric_value = compute_metric(y_train_orig, y_pred, X_train_orig, metric, feature)
+      
+        sensitivity = abs(updated_metric_value - original_metric_value)
+        
+        # Sensitivity check: if change in metric exceeds threshold, mark pattern as important
+        if sensitivity > sensitivity_threshold:
+            for idx in pattern_idx: # for index in the indexes meeting the threshold
+                if idx not in unique_indices: #index not in dict yet
+                    unique_indices[idx] = sensitivity 
+                elif sensitivity > unique_indices[idx]: #index in dict already
+                    unique_indices[idx] = sensitivity
+
+    # Sort based on sensitivity while retaining original order
+    ordered_indices = [idx for idx, _ in sorted(unique_indices.items(), key=lambda x: x[1], reverse=True) if idx < len(X_train_orig)]
+    
+
+    return list(dict.fromkeys(ordered_indices))  # Final deduplication
+
+# Helper function to compute the chosen metric
+def compute_metric(y_train_orig, y_pred, X, metric, feature):
+    # 0 = SPD, 1 = TPR parity, 2 = predictive parity
+    if metric == 0:
+        return compute_spd(y_pred, X, feature)
+    elif metric == 1:
+        return compute_tpr_parity(y_train_orig, y_pred, X, feature)
+    elif metric == 2:
+        return compute_predictive_parity(y_train_orig, y_pred, X, feature)
+    else:
+        raise ValueError("Invalid metric type provided.")
+
+# Statistical Parity Difference (SPD)
+def compute_spd(y_pred, X, sensitive_attr):
+    # Compute group-wise prediction rates
+    groups = X[sensitive_attr].unique()
+    group_rates = {g: np.mean(y_pred[X[sensitive_attr] == g]) for g in groups}
+    # Compute SPD as max absolute difference in group rates
+    spd = max(group_rates.values()) - min(group_rates.values())
+    return spd
+
+# True Positive Rate Parity (Equal Opportunity)
+def compute_tpr_parity(y_true, y_pred, X, sensitive_attr):
+    groups = X[sensitive_attr].unique()
+    tpr = {g: np.mean((y_pred[X[sensitive_attr] == g] == 1) & (y_true[X[sensitive_attr] == g] == 1)) for g in groups}
+    tpr_parity = max(tpr.values()) - min(tpr.values())
+    return tpr_parity
+
+# Predictive Parity
+def compute_predictive_parity(y_true, y_pred, X, sensitive_attr):
+    groups = X[sensitive_attr].unique()
+    ppv = {g: np.mean(y_true[(y_pred == 1) & (X[sensitive_attr] == g)]) for g in groups}
+    predictive_parity = max(ppv.values()) - min(ppv.values())
+    return predictive_parity
