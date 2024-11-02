@@ -1,5 +1,5 @@
 dowhy==0.11.1
-ipython==8.24.0
+ipython==8.18.1
 matplotlib==3.5.0
 numpy==1.23.2
 pandas==1.5.3
