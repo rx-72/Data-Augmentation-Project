@@ -374,7 +374,8 @@ def main():
   print("Grabbing Arguments...")
   print("")
   parser = argparse.ArgumentParser(description="Run robustness tests")
-  parser.add_argument('mode', choices=['baseline', 'leave_one_out'], help="Specify which test to run: (baseline, leave_one_out)")
+  parser.add_argument('--test', choices=['baseline', 'leave_one_out'], help="Specify which test to run: (baseline, leave_one_out)")
+  parser.add_argument("--dataset", choices=["cancer", "mpg", "ins"], default="cancer", help="Filename of the datset in the datasets' folder")
   parser.add_argument('--metric', type=str, default="accuracy", help="Metric to use (only for complex test)")
   args = parser.parse_args()
 
@@ -382,15 +383,23 @@ def main():
   # set parameters
   output_dir = params["output_dir"]
   os.makedirs(output_dir, exist_ok=True)
-  metric = args.metric if args.mode == "complex" else None
+  metric = args.metric if args.test == "complex" else None
 
   # Load data
-  X_train, X_test, y_train, y_test = load_data(random_seed=params["random_seed"])
+  if args.dataset == "cancer":
+    X_train, X_test, y_train, y_test = load_data(random_seed=params["random_seed"])
+  elif args.dataset == mpg:
+    X_train, X_test, y_train, y_test = load_mpg_cleaned(random_seed=params["random_seed"])
+  elif args.dataset == ins:
+    X_train, X_test, y_train, y_test = load_ins_cleaned(random_seed=params["random_seed"])
+  else:
+    print("")
+    print("Dataset is not provided, please provided dataset.")
 
   # run chosen test
-  if args.mode == 'baseline':
+  if args.test == 'baseline':
     run_baseline_test(X_train, y_train, X_test, y_test, output_dir)
-  elif args.mode == 'complex':
+  elif args.test == 'complex':
     if metric == "accuracy":
       run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric)
     else:
