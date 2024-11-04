@@ -60,6 +60,46 @@ def load_data(random_seed=42):
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=random_seed)
   return X_train, X_test, y_train, y_test
 
+def load_ins_cleaned(random_seed=42):
+    # fetch dataset
+    auto_mpg = pd.read_csv('datasets/insurance.csv').drop('sex', axis=1).drop('smoker', axis=1).drop('region', axis=1).replace('?', np.nan)
+    features = ['age', 'bmi', 'children']
+    X = auto_mpg[features].astype(float)
+    y = auto_mpg['charges']
+    
+    # assumed gt imputation
+    imputer = KNNImputer(n_neighbors=10)
+    X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=random_seed)
+    X_train = copy.deepcopy(X_train).reset_index(drop=True)
+    X_test = copy.deepcopy(X_test).reset_index(drop=True)
+    y_train = y_train.reset_index(drop=True)
+    y_test = y_test.reset_index(drop=True)
+
+    return X_train, X_test, y_train, y_test
+
+def load_mpg_cleaned(random_seed=42):
+    # fetch dataset
+    auto_mpg = pd.read_csv('datasets/auto-mpg.csv').drop('car name', axis=1).replace('?', np.nan)
+    
+    features = ['cylinders', 'displacement', 'horsepower', 'weight',
+                'acceleration', 'model year', 'origin']
+    X = auto_mpg[features].astype(float)
+    y = auto_mpg['mpg']
+    
+    # assumed gt imputation
+    imputer = KNNImputer(n_neighbors=10)
+    X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=random_seed)
+    X_train = copy.deepcopy(X_train).reset_index(drop=True)
+    X_test = copy.deepcopy(X_test).reset_index(drop=True)
+    y_train = y_train.reset_index(drop=True)
+    y_test = y_test.reset_index(drop=True)
+
+    return X_train, X_test, y_train, y_test
+
 def create_symbol(suffix=''):
     global symbol_id
     symbol_id += 1
