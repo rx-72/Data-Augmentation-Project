@@ -506,11 +506,23 @@ def main():
     elif args.dataset == "mpg":
       if metric == "mae":
         run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, maximize=False)
+      elif metric == "mse":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mse, LinearRegression, args, maximize=False)
+      elif metric == "rmse":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, rmse, LinearRegression, args, maximize=False)
+      elif metric == "r_squared":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, r_squared, LinearRegression, args)
       else:
         run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, maximize=False)
     elif args.dataset == "ins":
       if metric == "mae":
         run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, maximize=False)
+      elif metric == "mse":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mse, LinearRegression, args, maximize=False)
+      elif metric == "rmse":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, rmse, LinearRegression, args, maximize=False)
+      elif metric == "r_squared":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, r_squared, LinearRegression, args)
       else:
         run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, maximize=False)
     else:
