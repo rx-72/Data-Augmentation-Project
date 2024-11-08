@@ -399,7 +399,7 @@ def main():
   # run chosen test
   if args.test == 'baseline':
     run_baseline_test(X_train, y_train, X_test, y_test, output_dir)
-  elif args.test == 'complex':
+  elif args.test == 'leave_one_out':
     if metric == "accuracy":
       run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric)
     else:
