@@ -13,6 +13,10 @@ warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 with open("data-params.json", "r") as f:
   params = json.load(f)
 
+METRICS = {
+    "accuracy": accuracy
+}
+
 
 def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
   print("")
@@ -383,8 +387,9 @@ def main():
   # set parameters
   output_dir = params["output_dir"]
   os.makedirs(output_dir, exist_ok=True)
-  metric = args.metric if args.test == "complex" else None
+  metric = args.metric if args.test == "leave_one_out" else None
 
+  
   # Load data
   if args.dataset == "cancer":
     X_train, X_test, y_train, y_test = load_data(random_seed=params["random_seed"])
@@ -401,9 +406,9 @@ def main():
     run_baseline_test(X_train, y_train, X_test, y_test, output_dir)
   elif args.test == 'leave_one_out':
     if metric == "accuracy":
-      run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric)
+      run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy)
     else:
-      run_complex_test(X_train, y_train, X_test, y_test, output_dir, "accuracy")
+      run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy)
   else:
     print("")
     print("Not a test baseline")
