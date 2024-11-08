@@ -393,9 +393,9 @@ def main():
   # Load data
   if args.dataset == "cancer":
     X_train, X_test, y_train, y_test = load_data(random_seed=params["random_seed"])
-  elif args.dataset == mpg:
+  elif args.dataset == "mpg":
     X_train, X_test, y_train, y_test = load_mpg_cleaned(random_seed=params["random_seed"])
-  elif args.dataset == ins:
+  elif args.dataset == "ins":
     X_train, X_test, y_train, y_test = load_ins_cleaned(random_seed=params["random_seed"])
   else:
     print("")
