@@ -24,7 +24,8 @@ Using ZORRO as test measure to determine the robustness of a dataset in response
 1. Clone repository and change directory location to it (git clone -> cd)
 2. run "pip install -r requirements.txt"
        a. May need to run "pip install --upgrade ipykernel" to be compatible for ipython 8.18.1
-3. run "python run.py --test {"baseline", "complex"} --dataset {"cancer", "mpg", "ins"} --metric {"accuracy"}
+       b. IMPORTANT: Ignore this step on dsmlp it WILL CHANGE YOUR CONTAINER ENVIRONMENT. Instead run "pip install dowhy" and then skip to step 4
+4. run "python run.py --test {"baseline", "leave_one_out"} --dataset {"cancer", "mpg", "ins"} --metric {"accuracy"}
 
 Runs baseline or complex code robustness measurements on randomized seed of indexes for error injection followed by creating directory called ".../outputs/graph/" containing a heat map plot of resulting "uncertainty range X unceratinty size" robustness tests on Meyer. and ZORRO.
 
