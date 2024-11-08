@@ -31,6 +31,7 @@ from IPython.display import display, clear_output
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_breast_cancer
 from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
 
 # Config dict to set the logging level
 import logging.config
@@ -286,4 +287,17 @@ def leave_one_out(X_train, y_train, X_test, y_test, model_type, metric, maximize
 
 def accuracy(y_true, y_pred):
     return sum(y_true == y_pred)/len(y_true)
+
+def mae(y_true, y_pred):
+    return sum(abs(y_true - y_pred))/len(y_true)
+
+def mse(y_true, y_pred):
+    return sum((y_true - y_pred)**2)/len(y_true)
+
+def r_squared(y_true, y_pred):
+    y_bar = np.mean(y_true)
+    return 1 -(sum((y_true - y_pred)**2)/sum((y_true-y_bar)**2))
+
+def rmse(y_true, y_pred):
+    return np.sqrt(sum((y_true - y_pred)**2)/len(y_true))
 
