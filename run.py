@@ -18,7 +18,7 @@ METRICS = {
 }
 
 
-def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
+def run_baseline_test(X_train, y_train, X_test, y_test, output_dir, args):
   print("")
   print("Running baseline on ZORRO.")
   print("")
@@ -236,9 +236,9 @@ def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
   print("Baseline finished!")
   print("")
 
-def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, modeltype, maximize=True):
+def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, modeltype, args, maximize=True):
   print("")
-  print(f"Generating important indices based on {metric}:")
+  print(f"Generating important indices based on {args.metric}:")
   print("")
 
   X_train, X_test, y_train, y_test = X_train.reset_index(drop=True) , X_test.reset_index(drop=True) , y_train.reset_index(drop=True) , y_test.reset_index(drop=True)
@@ -496,23 +496,23 @@ def main():
 
   # run chosen test
   if args.test == 'baseline':
-    run_baseline_test(X_train, y_train, X_test, y_test, output_dir)
+    run_baseline_test(X_train, y_train, X_test, y_test, output_dir, args)
   elif args.test == 'leave_one_out':
     if args.dataset == "cancer":
       if metric == "accuracy":
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy, LogisticRegression)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy, LogisticRegression, args)
       else:
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy, LogisticRegression)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy, LogisticRegression, args)
     elif args.dataset == "mpg":
       if metric == "mae":
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, maximize=False)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, maximize=False)
       else:
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, maximize=False)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, maximize=False)
     elif args.dataset == "ins":
       if metric == "mae":
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, maximize=False)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, maximize=False)
       else:
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, maximize=False)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, maximize=False)
     else:
         print("")
         print("Not a dataset provided!")
