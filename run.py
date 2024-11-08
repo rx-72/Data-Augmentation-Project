@@ -185,7 +185,53 @@ def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
   plt.subplots_adjust(wspace=0.2, bottom=0.2, left=0.1, right=0.9)
   cb = fig.colorbar(heatmap2, ax=(ax1, ax2), orientation='vertical', pad=0.02)
   cb.set_label('Robustness Ratio (%)', fontsize=12)
-  plt.savefig(f"{output_dir}/breast-cancer-baseline-label-heatmap.pdf", bbox_inches='tight')
+  plt.savefig(f"{output_dir}/{args.dataset}-baseline-label-heatmap.pdf", bbox_inches='tight')
+
+  print("")
+  print("Making line plot...")
+  print("")
+  uncertain_pcts = np.array([0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1])*100
+  uncertain_radius_ratios = [0.05, 0.10, 0.15, 0.2, 0.25]
+
+  zonotope_data_mean_dict = dict()
+  zonotope_data_std_dict = dict()
+  for i, radius_ratio in enumerate(uncertain_radius_ratios):
+    zonotope_data_mean_dict[radius_ratio] = np.append([1], robustness_zonotope_mean.iloc[i, :].to_numpy())
+    zonotope_data_std_dict[radius_ratio] = np.append([0], robustness_zonotope_std.iloc[i, :].to_numpy())
+
+  interval_data_mean_dict = dict()
+  interval_data_std_dict = dict()
+  for i, radius_ratio in enumerate(uncertain_radius_ratios):
+    interval_data_mean_dict[radius_ratio] = np.append([1], robustness_interval_mean.iloc[i, :].to_numpy())
+    interval_data_std_dict[radius_ratio] = np.append([0], robustness_interval_std.iloc[i, :].to_numpy())
+    
+  fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(12, 2), sharex=True, dpi=200)
+
+  for i in range(4):
+    uncertain_radius_ratio = uncertain_radius_ratios[i]
+    axes[i].errorbar(uncertain_pcts, zonotope_data_mean_dict[uncertain_radius_ratio],
+                     yerr=3*zonotope_data_std_dict[uncertain_radius_ratio],
+                     marker='o', color='red', label='ZORRO', linestyle='-')
+    axes[i].errorbar(uncertain_pcts, interval_data_mean_dict[uncertain_radius_ratio],
+                     yerr=3*interval_data_std_dict[uncertain_radius_ratio],
+                     marker='s', color='green', label='Meyer et al.', linestyle='--')
+    axes[i].set_title(f'Uncertain Radius: {int(uncertain_radius_ratio*100)} %')
+    if i == 0:
+        axes[i].set_ylabel('Robustness Ratio', fontsize=12)
+    axes[i].set_ylim(-0.05, 1.05)
+    axes[i].grid(True)
+
+  print("Adjust layout")
+  lines_labels = [axes[0].get_legend_handles_labels()]
+  lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
+  fig.legend(lines, labels, loc = (0.73, 0.03), ncol=2, frameon=False)
+
+  plt.subplots_adjust(wspace=0.2, top=0.8, bottom=0.25, left=0.1, right=0.9)
+  fig.supxlabel('Uncertain Data Percentage (%)', fontsize=12, verticalalignment='bottom')
+  # plt.tight_layout()
+  # plt.show()
+  plt.savefig(f"{output_dir}/{args.dataset}-baseline-label-lineplot.pdf", bbox_inches='tight')
+  
   print("")
   print("Baseline finished!")
   print("")
@@ -200,7 +246,7 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
   
 
   print("")
-  print(f"Running complex ({str(metric)}) on ZORRO.")
+  print(f"Running complex (using {args.metric}) on ZORRO.")
   print("")
   robustness_dicts = []
   for seed in range(5):
@@ -231,7 +277,7 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
   robustness_zonotope_std = (sum([(pd.DataFrame(robustness_dicts[i]).iloc[:, 2:]-robustness_zonotope_mean)**2 for i in range(5)])/5).apply(np.sqrt)
 
   print()
-  print(f"Running complex ({metric}) on Meyer.")
+  print(f"Running complex (using {args.metric}) on Meyer.")
   print()
   # Running results with parameter adjustments on Meyer
   robustness_dicts = []
@@ -367,7 +413,53 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
   plt.subplots_adjust(wspace=0.2, bottom=0.2, left=0.1, right=0.9)
   cb = fig.colorbar(heatmap2, ax=(ax1, ax2), orientation='vertical', pad=0.02)
   cb.set_label('Robustness Ratio (%)', fontsize=12)
-  plt.savefig(f"{output_dir}/breast--complex({metric})-label-heatmap.pdf", bbox_inches='tight')
+  plt.savefig(f"{output_dir}/{args.dataset}-complex(using {args.metric})-label-heatmap.pdf", bbox_inches='tight')
+
+  print("")
+  print("Making line plot...")
+  print("")
+  uncertain_pcts = np.array([0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1])*100
+  uncertain_radius_ratios = [0.05, 0.10, 0.15, 0.2, 0.25]
+
+  zonotope_data_mean_dict = dict()
+  zonotope_data_std_dict = dict()
+  for i, radius_ratio in enumerate(uncertain_radius_ratios):
+    zonotope_data_mean_dict[radius_ratio] = np.append([1], robustness_zonotope_mean.iloc[i, :].to_numpy())
+    zonotope_data_std_dict[radius_ratio] = np.append([0], robustness_zonotope_std.iloc[i, :].to_numpy())
+
+  interval_data_mean_dict = dict()
+  interval_data_std_dict = dict()
+  for i, radius_ratio in enumerate(uncertain_radius_ratios):
+    interval_data_mean_dict[radius_ratio] = np.append([1], robustness_interval_mean.iloc[i, :].to_numpy())
+    interval_data_std_dict[radius_ratio] = np.append([0], robustness_interval_std.iloc[i, :].to_numpy())
+    
+  fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(12, 2), sharex=True, dpi=200)
+
+  for i in range(4):
+    uncertain_radius_ratio = uncertain_radius_ratios[i]
+    axes[i].errorbar(uncertain_pcts, zonotope_data_mean_dict[uncertain_radius_ratio],
+                     yerr=3*zonotope_data_std_dict[uncertain_radius_ratio],
+                     marker='o', color='red', label='ZORRO', linestyle='-')
+    axes[i].errorbar(uncertain_pcts, interval_data_mean_dict[uncertain_radius_ratio],
+                     yerr=3*interval_data_std_dict[uncertain_radius_ratio],
+                     marker='s', color='green', label='Meyer et al.', linestyle='--')
+    axes[i].set_title(f'Uncertain Radius: {int(uncertain_radius_ratio*100)} %')
+    if i == 0:
+        axes[i].set_ylabel('Robustness Ratio', fontsize=12)
+    axes[i].set_ylim(-0.05, 1.05)
+    axes[i].grid(True)
+
+  print("Adjust layout")
+  lines_labels = [axes[0].get_legend_handles_labels()]
+  lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
+  fig.legend(lines, labels, loc = (0.73, 0.03), ncol=2, frameon=False)
+
+  plt.subplots_adjust(wspace=0.2, top=0.8, bottom=0.25, left=0.1, right=0.9)
+  fig.supxlabel('Uncertain Data Percentage (%)', fontsize=12, verticalalignment='bottom')
+  # plt.tight_layout()
+  # plt.show()
+  plt.savefig(f"{output_dir}/{args.dataset}-complex(using {args.metric})-label-lineplot.pdf", bbox_inches='tight')
+  
   print("")
   print("Complex finished!")
   print("")
