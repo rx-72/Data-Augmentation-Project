@@ -3,17 +3,12 @@ Using ZORRO as test measure to determine the robustness of a dataset in response
 
 
 ### To do:
-1. Adjust metric functions per dataset sensitive labels
 
-2. Add dataset argument to parser
+1. Fix tqdm not showing up in terminal run
 
-3. Adjust function differences across different datasets and run on other included datasets
+2. Run tests for run.py
 
-4. Incorate one drop function to find "important values" of training data using different metrics
-
-5. Organize repo for presentation
-
-6. Fix tqdm not showing up in terminal run
+3. Implement multiplicity?
 
 
 
@@ -29,7 +24,13 @@ Using ZORRO as test measure to determine the robustness of a dataset in response
 
    b. IMPORTANT: Ignore this step on dsmlp it WILL CHANGE YOUR CONTAINER ENVIRONMENT. Instead run "pip install dowhy" and then skip to step 4
    
-3. run "python run.py --test {"baseline", "leave_one_out"} --dataset {"cancer", "mpg", "ins"} --metric {"accuracy"}
+3. run  python run.py --test {(tests)} --dataset {(uploaded datasets)} --metric {(chosen metric)}"
+            test: {"baseline", "leave_one_out"}
+            dataset: {"cancer", "mpg", "ins"
+            metric: {"accuracy", "mae"}
+
+   Note the cancer dataset uses 1 - 0 labels whereas the datasets "mpg" and "ins" use linear labels so chose metric according to dataset chosen. For example,
+   the cancer dataset can accuracy but not mae and vice versa for the mpg and ins datasets.
 
 Runs baseline or complex code robustness measurements on randomized seed of indexes for error injection followed by creating directory called ".../outputs/graph/" containing a heat map plot of resulting "uncertainty range X unceratinty size" robustness tests on Meyer. and ZORRO.
 
