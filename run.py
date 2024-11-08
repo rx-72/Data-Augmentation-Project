@@ -190,16 +190,17 @@ def run_baseline_test(X_train, y_train, X_test, y_test, output_dir):
   print("Baseline finished!")
   print("")
 
-def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, maximize=True):
+def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, modeltype, maximize=True):
   print("")
   print(f"Generating important indices based on {metric}:")
   print("")
 
   X_train, X_test, y_train, y_test = X_train.reset_index(drop=True) , X_test.reset_index(drop=True) , y_train.reset_index(drop=True) , y_test.reset_index(drop=True)
-  boundary_indices = leave_one_out(X_train, y_train, X_test, y_test, LogisticRegression, metric, maximize)
+  boundary_indices = leave_one_out(X_train, y_train, X_test, y_test, modeltype, metric, maximize)
+  
 
   print("")
-  print(f"Running complex ({metric}) on ZORRO.")
+  print(f"Running complex ({str(metric)}) on ZORRO.")
   print("")
   robustness_dicts = []
   for seed in range(5):
@@ -366,7 +367,7 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, maxim
   plt.subplots_adjust(wspace=0.2, bottom=0.2, left=0.1, right=0.9)
   cb = fig.colorbar(heatmap2, ax=(ax1, ax2), orientation='vertical', pad=0.02)
   cb.set_label('Robustness Ratio (%)', fontsize=12)
-  plt.savefig(f"{output_dir}/breast-cancer-complex({metric})-label-heatmap.pdf", bbox_inches='tight')
+  plt.savefig(f"{output_dir}/breast--complex({metric})-label-heatmap.pdf", bbox_inches='tight')
   print("")
   print("Complex finished!")
   print("")
@@ -405,10 +406,24 @@ def main():
   if args.test == 'baseline':
     run_baseline_test(X_train, y_train, X_test, y_test, output_dir)
   elif args.test == 'leave_one_out':
-    if metric == "accuracy":
-      run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy)
+    if args.dataset == "cancer":
+      if metric == "accuracy":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy, LogisticRegression)
+      else:
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy, LogisticRegression)
+    elif args.dataset == "mpg":
+      if metric == "mae":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, MAE, LogisticRegression, maximize=False)
+      else:
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, MAE, LogisticRegression, maximize=False)
+    elif args.dataset == "ins":
+      if metric == "mae":
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, MAE, LogisticRegression, maximize=False)
+      else:
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, MAE, LogisticRegression, maximize=False)
     else:
-      run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy)
+        print("")
+        print("Not a dataset provided!")
   else:
     print("")
     print("Not a test baseline")
