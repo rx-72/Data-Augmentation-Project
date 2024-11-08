@@ -413,14 +413,14 @@ def main():
         run_complex_test(X_train, y_train, X_test, y_test, output_dir, accuracy, LogisticRegression)
     elif args.dataset == "mpg":
       if metric == "mae":
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, MAE, LogisticRegression, maximize=False)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LogisticRegression, maximize=False)
       else:
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, MAE, LogisticRegression, maximize=False)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LogisticRegression, maximize=False)
     elif args.dataset == "ins":
       if metric == "mae":
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, MAE, LogisticRegression, maximize=False)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LogisticRegression, maximize=False)
       else:
-        run_complex_test(X_train, y_train, X_test, y_test, output_dir, MAE, LogisticRegression, maximize=False)
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LogisticRegression, maximize=False)
     else:
         print("")
         print("Not a dataset provided!")
