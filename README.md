@@ -25,9 +25,13 @@ Using ZORRO as test measure to determine the robustness of a dataset in response
    b. IMPORTANT: Ignore this step on dsmlp it WILL CHANGE YOUR CONTAINER ENVIRONMENT. Instead run "pip install dowhy" and then skip to step 4
    
 3. run  python run.py --test {(tests)} --dataset {(uploaded datasets)} --metric {(chosen metric)}"
-            test: {"baseline", "leave_one_out"}
-            dataset: {"cancer", "mpg", "ins"
-            metric: {"accuracy", "mae"}
+   
+
+      test: {"baseline", "leave_one_out"}
+
+      dataset: {"cancer", "mpg", "ins"}
+
+      metric: {"accuracy", "mae", "rmse", "mae", "r_squared"}
 
    Note the cancer dataset uses 1 - 0 labels whereas the datasets "mpg" and "ins" use linear labels so chose metric according to dataset chosen. For example,
    the cancer dataset can accuracy but not mae and vice versa for the mpg and ins datasets.
