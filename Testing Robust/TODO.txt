@@ -1,0 +1,31 @@
+Change the parameters in the insurance dataset.
+We keep getting 0 Robustness ratio in Meyer and Zorro
+
+MPG Notebook:
+boundary_indices, a new series(data structure) if they are not in the indeces to 0, if they are
+
+The array is the new test labels for y labels, then train a decision tree on the y labels using X train data.
+
+Get the branches, get the ones that are most interesting of importance.
+
+after seeing the decision tree, get the "score" , how many points were split off. 
+
+
+
+Take the first 10 percent of X train, 
+
+perce = 0.1 * len(X_train)
+
+array_indexes = np.zeros(len(X_train))
+for i in range(len(X_train)):
+	if i <= perce:
+		index = boundary_indices[i]
+		array_indexes[index] = 1
+	else:
+		array[i] = 0 
+
+afterwards, train a decision tree
+
+i don't do anything afterwards, what is the decision tree between these similar values.
+
+di it on the cell that says #Using mae, LinearRegression
