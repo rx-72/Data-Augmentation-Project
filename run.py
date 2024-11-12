@@ -24,7 +24,7 @@ def run_baseline_test_ins(X_train, y_train, X_test, y_test, output_dir, args):
   robustness_dicts = []
   for seed in range(5):
     # mpg +- 2 is robust
-    robustness_radius = 2
+    robustness_radius = 500
     label_range = (y_train.max()-y_train.min())
     ratios = [0.02, 0.04, 0.06, 0.08]
     uncertain_radiuses = [ratio*label_range for ratio in ratios]
@@ -55,7 +55,7 @@ def run_baseline_test_ins(X_train, y_train, X_test, y_test, output_dir, args):
   robustness_dicts = []
   for seed in range(5):
     # mpg +- 2 is robust
-    robustness_radius = 2
+    robustness_radius = 500
     label_range = (y_train.max()-y_train.min())
     ratios = [0.02, 0.04, 0.06, 0.08]
     uncertain_radiuses = [ratio*label_range for ratio in ratios]
@@ -378,7 +378,7 @@ def run_complex_test_ins(X_train, y_train, X_test, y_test, output_dir, metric, m
   robustness_dicts = []
   for seed in range(5):
     # mpg +- 2 is robust
-    robustness_radius = 2
+    robustness_radius = 500
     label_range = (y_train.max()-y_train.min())
     ratios = [0.02, 0.04, 0.06, 0.08]
     uncertain_radiuses = [ratio*label_range for ratio in ratios]
@@ -410,7 +410,7 @@ def run_complex_test_ins(X_train, y_train, X_test, y_test, output_dir, metric, m
   robustness_dicts = []
   for seed in range(5):
     # mpg +- 2 is robust
-    robustness_radius = 2
+    robustness_radius = 500
     label_range = (y_train.max()-y_train.min())
     ratios = [0.02, 0.04, 0.06, 0.08]
     uncertain_radiuses = [ratio*label_range for ratio in ratios]
