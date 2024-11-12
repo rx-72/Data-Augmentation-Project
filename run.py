@@ -382,7 +382,7 @@ def run_complex_test_ins(X_train, y_train, X_test, y_test, output_dir, metric, m
     label_range = (y_train.max()-y_train.min())
     ratios = [0.02, 0.04, 0.06, 0.08]
     uncertain_radiuses = [ratio*label_range for ratio in ratios]
-    uncertain_pcts = list(np.arange(1, 11)/1000)
+    uncertain_pcts = list(np.arange(1, 11)/100)
     robustness_dict = dict()
     robustness_dict['uncertain_radius'] = uncertain_radiuses
     robustness_dict['uncertain_radius_ratios'] = ratios
@@ -414,7 +414,7 @@ def run_complex_test_ins(X_train, y_train, X_test, y_test, output_dir, metric, m
     label_range = (y_train.max()-y_train.min())
     ratios = [0.02, 0.04, 0.06, 0.08]
     uncertain_radiuses = [ratio*label_range for ratio in ratios]
-    uncertain_pcts = list(np.arange(1, 11)/1000)
+    uncertain_pcts = list(np.arange(1, 11)/100)
     robustness_dict = dict()
     robustness_dict['uncertain_radius'] = uncertain_radiuses
     robustness_dict['uncertain_radius_ratios'] = ratios
