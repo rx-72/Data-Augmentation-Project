@@ -4,11 +4,15 @@ Using ZORRO as test measure to determine the robustness of a dataset in response
 
 ### To do:
 
-1. Fix tqdm not showing up in terminal run
+1. CREATE DOC SHOWCASING PLOTS BY FRIDAY 11/13/24 (include sections with data length for ease of use)
 
-2. Run tests for run.py
+2. Decompress decisiontrees to trees that capture the most positives values (rank by top 3 per say, include number of points and the total ranking of the data)
 
-3. Implement multiplicity?
+3. Running tests on naive test approach of insurance and get median robustness to determine if approach gained is by chance or not
+
+4. Read on influencing functions https://christophm.github.io/interpretable-ml-book/influential.html
+
+5. Look into finding subsets of importance vs points of importance if have the time
 
 
 
