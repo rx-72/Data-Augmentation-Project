@@ -29,3 +29,28 @@ afterwards, train a decision tree
 i don't do anything afterwards, what is the decision tree between these similar values.
 
 di it on the cell that says #Using mae, LinearRegression
+
+
+
+Replicate Gopher pattern mining but with leave-one out, plug in to leave- on out to explore all important patterns. 
+
+Take every possible feature, highest correlation and try to come up with 
+
+heuristic to get alpha.. age, column has to be larger than alpha, heuristics, reread gopher 
+
+discrete to remove on, come up with a histogram, so that the size of the bar is less than K.
+
+extract the pattern form the influnces.
+
+discretizing algorithm, 
+
+
+
+we chose the percentage of errors, error radius, and robustness..
+
+so first thing after running leave-one out, we will then have to find which one has the most importance, discretization... importance, 
+
+
+if the values fall outside of the bounds for each column, label them as not important. Inside the bounds it is important, place high priority on the top scenarioes, then 2nd priorty, 3rd priority, then get the unique values(drop duplicates). store it as boundary indices, then rerun the code as we ran before. See the amount of values because we might not have 10% of the train data. if it odesn't meet the 10% then (uncertain_pcts = list(np.arange(1, 11)/100))
+
+
