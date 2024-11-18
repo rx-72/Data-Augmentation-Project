@@ -4,15 +4,13 @@ Using ZORRO as test measure to determine the robustness of a dataset in response
 
 ### To do:
 
-1. CREATE DOC SHOWCASING PLOTS BY FRIDAY 11/13/24 (include sections with data length for ease of use)
+1. Read on influencing functions https://christophm.github.io/interpretable-ml-book/influential.html (pattern mining section)
 
-2. Decompress decisiontrees to trees that capture the most positives values (rank by top 3 per say, include number of points and the total ranking of the data)
+2. Write a new code that can compound all methods into a single plot based on method type
 
-3. Running tests on naive test approach of insurance and get median robustness to determine if approach gained is by chance or not
+3. Run tests messing around with histogram model
 
-4. Read on influencing functions https://christophm.github.io/interpretable-ml-book/influential.html
-
-5. Look into finding subsets of importance vs points of importance if have the time
+4. Look into finding subsets of importance vs points of importance if have the time
 
 (May remove cancer dataset, tests are more effectively upon numerical data lables)
 
