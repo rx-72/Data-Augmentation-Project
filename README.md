@@ -4,7 +4,7 @@ Using ZORRO as test measure to determine the robustness of a dataset in response
 
 ### To do:
 
-1. Read on influencing functions https://christophm.github.io/interpretable-ml-book/influential.html (pattern mining section)
+1. Read on influencing functions https://gopher-sys.github.io/ (pattern mining section)
 
 2. Write a new code that can compound all methods into a single plot based on method type
 
