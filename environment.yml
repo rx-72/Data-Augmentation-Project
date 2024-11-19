@@ -1,0 +1,15 @@
+name: Robustness_test_dependencies
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9  # Replace with your project's Python version
+  - dowhy=0.11.1
+  - ipython=8.18.1
+  - matplotlib=3.5.0
+  - numpy=1.23.2
+  - pandas=1.5.3
+  - scikit-learn=1.5.0
+  - scipy=1.13.0
+  - sympy=1.12
+  - tqdm=4.66.4
