@@ -10,7 +10,9 @@ Using ZORRO as test measure to determine the robustness of a dataset in response
 
 3. Run tests messing around with histogram model
 
-4. Look into finding subsets of importance vs points of importance if have the time
+4. Test environment.yml file
+
+5. Look into finding subsets of importance vs points of importance if have the time
 
 (May remove cancer dataset, tests are more effectively upon numerical data lables)
 
