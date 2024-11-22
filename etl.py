@@ -265,10 +265,13 @@ def leave_one_out(X_train, y_train, X_test, y_test, model_type, metric, maximize
     predictions = model_type().fit(X_train, y_train).predict(X_test)
     initial_metric = metric(y_test.to_numpy(), predictions)
     influence_results = []
-    
+
     for i in range(len(X_train)):
-        X_train_new = np.delete(X_train, i, axis=0)
-        y_train_new = np.delete(y_train, i, axis=0)
+        # Use pandas' drop method to remove the i-th row
+        X_train_new = X_train.drop(i)
+        y_train_new = y_train.drop(i)
+        #X_train_new = np.delete(X_train, i, axis=0)
+        #y_train_new = np.delete(y_train, i, axis=0)
         
         new_preds = model_type().fit(X_train_new, y_train_new).predict(X_test)
         new_metric = metric(y_test.to_numpy(), new_preds)
@@ -278,11 +281,8 @@ def leave_one_out(X_train, y_train, X_test, y_test, model_type, metric, maximize
         else:
             metric_diff = new_metric - initial_metric
         influence_results.append((i, metric_diff))
-        
-        
-    
-    influence_results = sorted(influence_results,key=lambda x: x[1], reverse=True)
-    #print(influence_results)
+
+    influence_results = sorted(influence_results, key=lambda x: x[1], reverse=True)
     return [i[0] for i in influence_results]
 
 def accuracy(y_true, y_pred):
