@@ -418,7 +418,6 @@ def main():
     # set parameters
     output_dir = params["output_dir"]
     os.makedirs(output_dir, exist_ok=True)
-    metric = args.metric
 
   
     if args.dataset == "mpg":
