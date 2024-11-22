@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import warnings
 from sklearn.exceptions import DataConversionWarning
 from etl import *
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 
 warnings.filterwarnings('ignore')
 warnings.filterwarnings(action='ignore', category=DataConversionWarning)
@@ -17,7 +19,7 @@ METRICS = {
     "accuracy": accuracy
 }
 
-def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, modeltype, args, ratios, robustness_radius, max_uncertain_pct=10, maximize=True):
+def run_complex_test(X_train, y_train, X_test, y_test, output_dir, args, ratios, robustness_radius, max_uncertain_pct=10, maximize=True):
     def plot_heatmap(ax, heatmap_data, x_labels, y_labels, title):
         heatmap = ax.imshow(heatmap_data, cmap=cmap, interpolation='nearest', 
                         aspect='auto', alpha=0.8, vmin=0, vmax=100)
@@ -51,20 +53,19 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
         ax.set_xlabel('Percentage of Uncertain Data', fontsize=12)
         ax.set_ylabel('Uncertain Radius (%)', fontsize=12)
     
-    
     print("")
-    print(f"Generating important indices based on {args.metric}:")
+    print(f"Generating important indices based on Linear Regression, MSE:")
     print("")
 
     X_train, X_test, y_train, y_test = X_train.reset_index(drop=True) , X_test.reset_index(drop=True) , y_train.reset_index(drop=True) , y_test.reset_index(drop=True)
-    boundary_indices = leave_one_out(X_train, y_train, X_test, y_test, modeltype, metric, maximize)
+    boundary_indices = leave_one_out(X_train, y_train, X_test, y_test, LinearRegression, mse, maximize)
   
 
     print("")
-    print(f"Running Leave One Out (using {args.metric}) on ZORRO.")
+    print(f"Running Leave One Out (using Linear Regression, MSE) on ZORRO.")
     print("")
     
-    robustness_dicts = []
+    robustness_dicts_lr_mse = []
     for seed in range(5):
         # mpg +- 2 is robust
         label_range = (y_train.max()-y_train.min())
@@ -85,7 +86,7 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
                                                                     robustness_radius=robustness_radius, 
                                                                     interval=False, seed=seed)
                 robustness_dict[uncertain_pct].append(robustness_ratio)
-        robustness_dicts.append(robustness_dict)
+        robustness_dicts_lr_mse.append(robustness_dict)
 
     print("")
     print(f"Running Naive Approach on ZORRO.")
@@ -113,10 +114,10 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
         robustness_dicts_naive.append(robustness_dict)
 
     print()
-    print(f"Running Leave One Out (using {args.metric}) on Meyer.")
+    print(f"Running Leave One Out (using Linear Regression, MSE) on Meyer.")
     print()
     
-    robustness_dicts_interval = []
+    robustness_dicts_interval_lr_mse = []
     for seed in range(5):
         # mpg +- 2 is robust
         label_range = (y_train.max()-y_train.min())
@@ -136,7 +137,7 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
                                                                     robustness_radius=robustness_radius, 
                                                                     interval=True, seed=seed)
                 robustness_dict_interval[uncertain_pct].append(robustness_ratio)
-        robustness_dicts_interval.append(robustness_dict_interval)
+        robustness_dicts_interval_lr_mse.append(robustness_dict_interval)
 
     
     print("")
@@ -162,12 +163,190 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
                                                                     robustness_radius=robustness_radius, 
                                                                     interval=True, seed=seed)
                 robustness_dict_interval[uncertain_pct].append(robustness_ratio)
-        robustness_dicts_interval_naive.append(robustness_dict_interval)
+        robustness_dicts_interval_naive.append(robustness_dict_interval) 
+    
+    
+    print("")
+    print(f"Generating important indices based on Linear Regression, MAE:")
+    print("")
+
+    X_train, X_test, y_train, y_test = X_train.reset_index(drop=True) , X_test.reset_index(drop=True) , y_train.reset_index(drop=True) , y_test.reset_index(drop=True)
+    boundary_indices = leave_one_out(X_train, y_train, X_test, y_test, LinearRegression, mae, maximize)
+
+    print("")
+    print(f"Running Leave One Out (using Linear Regression, MAE) on ZORRO.")
+    print("")
+    
+    robustness_dicts_lr_mae = []
+    for seed in range(5):
+        # mpg +- 2 is robust
+        label_range = (y_train.max()-y_train.min())
+        uncertain_radiuses = [ratio*label_range for ratio in ratios]
+        uncertain_pcts = list(np.arange(1, max_uncertain_pct + 1)/100)
+        robustness_dict = dict()
+        robustness_dict['uncertain_radius'] = uncertain_radiuses
+        robustness_dict['uncertain_radius_ratios'] = ratios
+        for uncertain_pct in tqdm(uncertain_pcts, desc='Progess'):
+            robustness_dict[uncertain_pct] = list()
+            uncertain_num = int(uncertain_pct*len(y_train))
+            for uncertain_radius in tqdm(uncertain_radiuses, desc=f'Varying Uncertain Radius'):
+
+                robustness_ratio = compute_robustness_ratio_sensitive_label_error(X_train, y_train, X_test, y_test, 
+                                                                    uncertain_num=uncertain_num,
+                                                                    boundary_indices=boundary_indices,
+                                                                    uncertain_radius=uncertain_radius, 
+                                                                    robustness_radius=robustness_radius, 
+                                                                    interval=False, seed=seed)
+                robustness_dict[uncertain_pct].append(robustness_ratio)
+        robustness_dicts_lr_mae.append(robustness_dict)
+
+    print()
+    print(f"Running Leave One Out (using Linear Regression, MAE) on Meyer.")
+    print()
+    
+    robustness_dicts_interval_lr_mae = []
+    for seed in range(5):
+        # mpg +- 2 is robust
+        label_range = (y_train.max()-y_train.min())
+        uncertain_radiuses = [ratio*label_range for ratio in ratios]
+        uncertain_pcts = list(np.arange(1, max_uncertain_pct + 1)/100)
+        robustness_dict_interval = dict()
+        robustness_dict_interval['uncertain_radius'] = uncertain_radiuses
+        robustness_dict_interval['uncertain_radius_ratios'] = ratios
+        for uncertain_pct in tqdm(uncertain_pcts, desc='Progess'):
+            robustness_dict_interval[uncertain_pct] = list()
+            uncertain_num = int(uncertain_pct*len(y_train))
+            for uncertain_radius in tqdm(uncertain_radiuses, desc=f'Varying Uncertain Radius'):
+                robustness_ratio = compute_robustness_ratio_sensitive_label_error(X_train, y_train, X_test, y_test, 
+                                                                    uncertain_num=uncertain_num,
+                                                                    boundary_indices=boundary_indices,
+                                                                    uncertain_radius=uncertain_radius, 
+                                                                    robustness_radius=robustness_radius, 
+                                                                    interval=True, seed=seed)
+                robustness_dict_interval[uncertain_pct].append(robustness_ratio)
+        robustness_dicts_interval_lr_mae.append(robustness_dict_interval)
+
+    print("")
+    print(f"Generating important indices based on RandomForestRegressor, MSE:")
+    print("")
+
+    X_train, X_test, y_train, y_test = X_train.reset_index(drop=True) , X_test.reset_index(drop=True) , y_train.reset_index(drop=True) , y_test.reset_index(drop=True)
+    boundary_indices = leave_one_out(X_train, y_train, X_test, y_test, RandomForestRegressor, mse, maximize)
+
+    print("")
+    print(f"Running Leave One Out (using RandomForestRegressor, MSE) on ZORRO.")
+    print("")
+    
+    robustness_dicts_rf_mse = []
+    for seed in range(5):
+        # mpg +- 2 is robust
+        label_range = (y_train.max()-y_train.min())
+        uncertain_radiuses = [ratio*label_range for ratio in ratios]
+        uncertain_pcts = list(np.arange(1, max_uncertain_pct + 1)/100)
+        robustness_dict = dict()
+        robustness_dict['uncertain_radius'] = uncertain_radiuses
+        robustness_dict['uncertain_radius_ratios'] = ratios
+        for uncertain_pct in tqdm(uncertain_pcts, desc='Progess'):
+            robustness_dict[uncertain_pct] = list()
+            uncertain_num = int(uncertain_pct*len(y_train))
+            for uncertain_radius in tqdm(uncertain_radiuses, desc=f'Varying Uncertain Radius'):
+
+                robustness_ratio = compute_robustness_ratio_sensitive_label_error(X_train, y_train, X_test, y_test, 
+                                                                    uncertain_num=uncertain_num,
+                                                                    boundary_indices=boundary_indices,
+                                                                    uncertain_radius=uncertain_radius, 
+                                                                    robustness_radius=robustness_radius, 
+                                                                    interval=False, seed=seed)
+                robustness_dict[uncertain_pct].append(robustness_ratio)
+        robustness_dicts_rf_mse.append(robustness_dict)
+
+    print()
+    print(f"Running Leave One Out (using RandomForestRegressor, MSE) on Meyer.")
+    print()
+    
+    robustness_dicts_interval_rf_mse = []
+    for seed in range(5):
+        # mpg +- 2 is robust
+        label_range = (y_train.max()-y_train.min())
+        uncertain_radiuses = [ratio*label_range for ratio in ratios]
+        uncertain_pcts = list(np.arange(1, max_uncertain_pct + 1)/100)
+        robustness_dict_interval = dict()
+        robustness_dict_interval['uncertain_radius'] = uncertain_radiuses
+        robustness_dict_interval['uncertain_radius_ratios'] = ratios
+        for uncertain_pct in tqdm(uncertain_pcts, desc='Progess'):
+            robustness_dict_interval[uncertain_pct] = list()
+            uncertain_num = int(uncertain_pct*len(y_train))
+            for uncertain_radius in tqdm(uncertain_radiuses, desc=f'Varying Uncertain Radius'):
+                robustness_ratio = compute_robustness_ratio_sensitive_label_error(X_train, y_train, X_test, y_test, 
+                                                                    uncertain_num=uncertain_num,
+                                                                    boundary_indices=boundary_indices,
+                                                                    uncertain_radius=uncertain_radius, 
+                                                                    robustness_radius=robustness_radius, 
+                                                                    interval=True, seed=seed)
+                robustness_dict_interval[uncertain_pct].append(robustness_ratio)
+        robustness_dicts_interval_rf_mse.append(robustness_dict_interval)
+
+    X_train, X_test, y_train, y_test = X_train.reset_index(drop=True) , X_test.reset_index(drop=True) , y_train.reset_index(drop=True) , y_test.reset_index(drop=True)
+    boundary_indices = leave_one_out(X_train, y_train, X_test, y_test, RandomForestRegressor, mae, maximize)
+
+    print("")
+    print(f"Running Leave One Out (using RandomForestRegressor, MAE) on ZORRO.")
+    print("")
+    
+    robustness_dicts_rf_mae = []
+    for seed in range(5):
+        # mpg +- 2 is robust
+        label_range = (y_train.max()-y_train.min())
+        uncertain_radiuses = [ratio*label_range for ratio in ratios]
+        uncertain_pcts = list(np.arange(1, max_uncertain_pct + 1)/100)
+        robustness_dict = dict()
+        robustness_dict['uncertain_radius'] = uncertain_radiuses
+        robustness_dict['uncertain_radius_ratios'] = ratios
+        for uncertain_pct in tqdm(uncertain_pcts, desc='Progess'):
+            robustness_dict[uncertain_pct] = list()
+            uncertain_num = int(uncertain_pct*len(y_train))
+            for uncertain_radius in tqdm(uncertain_radiuses, desc=f'Varying Uncertain Radius'):
+
+                robustness_ratio = compute_robustness_ratio_sensitive_label_error(X_train, y_train, X_test, y_test, 
+                                                                    uncertain_num=uncertain_num,
+                                                                    boundary_indices=boundary_indices,
+                                                                    uncertain_radius=uncertain_radius, 
+                                                                    robustness_radius=robustness_radius, 
+                                                                    interval=False, seed=seed)
+                robustness_dict[uncertain_pct].append(robustness_ratio)
+        robustness_dicts_rf_mae.append(robustness_dict)
+
+    print()
+    print(f"Running Leave One Out (using RandomForestRegressor, MAE) on Meyer.")
+    print()
+    
+    robustness_dicts_interval_rf_mae = []
+    for seed in range(5):
+        # mpg +- 2 is robust
+        label_range = (y_train.max()-y_train.min())
+        uncertain_radiuses = [ratio*label_range for ratio in ratios]
+        uncertain_pcts = list(np.arange(1, max_uncertain_pct + 1)/100)
+        robustness_dict_interval = dict()
+        robustness_dict_interval['uncertain_radius'] = uncertain_radiuses
+        robustness_dict_interval['uncertain_radius_ratios'] = ratios
+        for uncertain_pct in tqdm(uncertain_pcts, desc='Progess'):
+            robustness_dict_interval[uncertain_pct] = list()
+            uncertain_num = int(uncertain_pct*len(y_train))
+            for uncertain_radius in tqdm(uncertain_radiuses, desc=f'Varying Uncertain Radius'):
+                robustness_ratio = compute_robustness_ratio_sensitive_label_error(X_train, y_train, X_test, y_test, 
+                                                                    uncertain_num=uncertain_num,
+                                                                    boundary_indices=boundary_indices,
+                                                                    uncertain_radius=uncertain_radius, 
+                                                                    robustness_radius=robustness_radius, 
+                                                                    interval=True, seed=seed)
+                robustness_dict_interval[uncertain_pct].append(robustness_ratio)
+        robustness_dicts_interval_rf_mae.append(robustness_dict_interval)  
+
 
     print("Heatmaps:")
 
     # Create the heatmap plot with a 2x2 grid
-    fig, axes = plt.subplots(2, 2, figsize=(15, 8), dpi=200)
+    fig, axes = plt.subplots(5, 2, figsize=(15, 15), dpi=200)
 
     # Define colormap
     cmap = plt.get_cmap("autumn_r")
@@ -175,15 +354,27 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
     print("Formatting data for the heatmaps")
     
     df1 = sum([pd.DataFrame(robustness_dicts_interval_naive[i]).iloc[:, 2:] for i in range(5)])/5
-    df2 = sum([pd.DataFrame(robustness_dicts_interval[i]).iloc[:, 2:] for i in range(5)])/5
+    df2 = sum([pd.DataFrame(robustness_dicts_interval_lr_mse[i]).iloc[:, 2:] for i in range(5)])/5
     df3 = sum([pd.DataFrame(robustness_dicts_naive[i]).iloc[:, 2:] for i in range(5)])/5  
-    df4 = sum([pd.DataFrame(robustness_dicts[i]).iloc[:, 2:] for i in range(5)])/5  
+    df4 = sum([pd.DataFrame(robustness_dicts_lr_mse[i]).iloc[:, 2:] for i in range(5)])/5
+    df5 = sum([pd.DataFrame(robustness_dicts_interval_lr_mae[i]).iloc[:, 2:] for i in range(5)])/5
+    df6 = sum([pd.DataFrame(robustness_dicts_lr_mae[i]).iloc[:, 2:] for i in range(5)])/5
+    df7 = sum([pd.DataFrame(robustness_dicts_interval_rf_mse[i]).iloc[:, 2:] for i in range(5)])/5  
+    df8 = sum([pd.DataFrame(robustness_dicts_rf_mse[i]).iloc[:, 2:] for i in range(5)])/5
+    df9 = sum([pd.DataFrame(robustness_dicts_interval_rf_mae[i]).iloc[:, 2:] for i in range(5)])/5  
+    df10 = sum([pd.DataFrame(robustness_dicts_rf_mae[i]).iloc[:, 2:] for i in range(5)])/5
 
     print("Converting fractions to percentages")
     heatmap_data1 = df1.multiply(100).values
     heatmap_data2 = df2.multiply(100).values
     heatmap_data3 = df3.multiply(100).values
     heatmap_data4 = df4.multiply(100).values
+    heatmap_data5 = df5.multiply(100).values
+    heatmap_data6 = df6.multiply(100).values
+    heatmap_data7 = df7.multiply(100).values
+    heatmap_data8 = df8.multiply(100).values
+    heatmap_data9 = df9.multiply(100).values
+    heatmap_data10 = df10.multiply(100).values
 
     # Labels
     x_labels = df1.columns.tolist()
@@ -191,16 +382,22 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, metric, model
 
     # Plot each heatmap
     plot_heatmap(axes[0, 0], heatmap_data1, x_labels, y_labels, 'Meyer et al. (Naive Approach)')
-    plot_heatmap(axes[0, 1], heatmap_data2, x_labels, y_labels, 'Meyer et al. (Subset Approach)')
-    plot_heatmap(axes[1, 0], heatmap_data3, x_labels, y_labels, 'ZORRO (Naive Approach)')
-    plot_heatmap(axes[1, 1], heatmap_data4, x_labels, y_labels, 'ZORRO (Subset Approach)')
+    plot_heatmap(axes[0, 1], heatmap_data3, x_labels, y_labels, 'ZORRO (Naive Approach)')
+    plot_heatmap(axes[1, 0], heatmap_data2, x_labels, y_labels, 'Meyer et al. (LinReg, mse)')
+    plot_heatmap(axes[1, 1], heatmap_data4, x_labels, y_labels, 'ZORRO (LinReg, mse)')
+    plot_heatmap(axes[2, 0], heatmap_data5, x_labels, y_labels, 'Meyer et al. (LinReg, mae)')
+    plot_heatmap(axes[2, 1], heatmap_data6, x_labels, y_labels, 'ZORRO (LinReg, mae)')
+    plot_heatmap(axes[3, 0], heatmap_data7, x_labels, y_labels, 'Meyer et al. (RndFrst, mse)')
+    plot_heatmap(axes[3, 1], heatmap_data8, x_labels, y_labels, 'ZORRO (RndFrst, mse)')
+    plot_heatmap(axes[4, 0], heatmap_data9, x_labels, y_labels, 'Meyer et al. (RndFrst, mae)')
+    plot_heatmap(axes[4, 1], heatmap_data10, x_labels, y_labels, 'ZORRO (RndFrst, mae)')
 
     # Adjust layout and add colorbar
-    plt.subplots_adjust(wspace=0.2, hspace=0.4, bottom=0.1, left=0.1, right=0.9)
+    plt.subplots_adjust(wspace=0.2, hspace=0.6, bottom=0.1, left=0.1, right=0.9)
     cb = fig.colorbar(axes[0, 1].images[0], ax=axes, orientation='vertical', pad=0.02)
     cb.set_label('Robustness Ratio (%)', fontsize=12)
     
-    plt.savefig(f"{output_dir}/{args.dataset}-LeaveOneOut(using {args.metric})-label-heatmap.pdf", bbox_inches='tight')
+    plt.savefig(f"{output_dir}/{args.dataset}-LeaveOneOut-method-heatmap.pdf", bbox_inches='tight')
   
     print("")
     print("Leave One Out finished!")
@@ -215,7 +412,6 @@ def main():
     parser = argparse.ArgumentParser(description="Run robustness tests")
     #parser.add_argument('--test', choices=['baseline', 'leave_one_out'], help="Specify which test to run: (baseline, leave_one_out)")
     parser.add_argument("--dataset", choices=["mpg", "ins"], default="mpg", help="Filename of the dataset in the datasets' folder")
-    parser.add_argument('--metric', choices=["mae", "mse"], default="mae", type=str, help="Metric to utilize")
     args = parser.parse_args()
 
     # Set parameters
@@ -228,21 +424,11 @@ def main():
     if args.dataset == "mpg":
         ratios = [0.05, 0.10, 0.15, 0.2, 0.25]
         X_train, X_test, y_train, y_test = load_mpg_cleaned(random_seed=params["random_seed"])
-        if metric == "mae":
-            run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, ratios, 2, maximize=False)
-        elif metric == "mse":
-            run_complex_test(X_train, y_train, X_test, y_test, output_dir, mse, LinearRegression, args, ratios, 2, maximize=False)
-        else:
-            print("Not a valid metric!")
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, args, ratios, 2, maximize=False)
     elif args.dataset == "ins":
         ratios = [0.02, 0.04, 0.06, 0.08]
         X_train, X_test, y_train, y_test = load_ins_cleaned(random_seed=params["random_seed"])
-        if metric == "mae":
-            run_complex_test(X_train, y_train, X_test, y_test, output_dir, mae, LinearRegression, args, ratios, 500, maximize=False)
-        elif metric == "mse":
-            run_complex_test(X_train, y_train, X_test, y_test, output_dir, mse, LinearRegression, args, ratios, 500, maximize=False)
-        else:
-            print("Not a valid metric!")
+        run_complex_test(X_train, y_train, X_test, y_test, output_dir, args, ratios, 500, maximize=False)
     else:
         print("")
         print("Dataset is not provided, please provided dataset.")
