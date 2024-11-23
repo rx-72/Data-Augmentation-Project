@@ -3,7 +3,7 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python=3.9  # Replace with your project's Python version
+  - python=3.9
   - dowhy=0.11.1
   - ipython=8.18.1
   - matplotlib=3.5.0
@@ -13,3 +13,4 @@ dependencies:
   - scipy=1.13.0
   - sympy=1.12
   - tqdm=4.66.4
+  - ipywidgets
