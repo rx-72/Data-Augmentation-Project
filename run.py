@@ -9,6 +9,8 @@ from etl import *
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 
+
+warnings.filterwarnings("ignore", category=RuntimeWarning, message="networkx backend defined more than once")
 warnings.filterwarnings('ignore')
 warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
