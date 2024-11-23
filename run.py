@@ -346,7 +346,7 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, args, ratios,
     print("Heatmaps:")
 
     # Create the heatmap plot with a 2x2 grid
-    fig, axes = plt.subplots(5, 2, figsize=(15, 15), dpi=200)
+    fig, axes = plt.subplots(5, 2, figsize=(18, 18), dpi=200)
 
     # Define colormap
     cmap = plt.get_cmap("autumn_r")
@@ -393,8 +393,9 @@ def run_complex_test(X_train, y_train, X_test, y_test, output_dir, args, ratios,
     plot_heatmap(axes[4, 1], heatmap_data10, x_labels, y_labels, 'ZORRO (RndFrst, mae)')
 
     # Adjust layout and add colorbar
-    plt.subplots_adjust(wspace=0.2, hspace=0.6, bottom=0.1, left=0.1, right=0.9)
-    cb = fig.colorbar(axes[0, 1].images[0], ax=axes, orientation='vertical', pad=0.02)
+    plt.subplots_adjust(wspace=0.2, hspace=0.4, bottom=0.1, left=0.1, right=0.9)
+    last_heatmap = axes[4, 1].images[0]
+    cb = fig.colorbar(last_heatmap, ax=axes, orientation='vertical', pad=0.02)
     cb.set_label('Robustness Ratio (%)', fontsize=12)
     
     plt.savefig(f"{output_dir}/{args.dataset}-LeaveOneOut-method-heatmap.pdf", bbox_inches='tight')
