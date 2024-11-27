@@ -621,14 +621,14 @@ def run_discretization_test(X_train, y_train, X_test, y_test, output_dir, args, 
     heatmaps = []
     heatmaps.append(plot_heatmap(axes[0, 0], heatmap_data1, x_labels, y_labels, 'Meyer et al. (Naive Approach)'))
     heatmaps.append(plot_heatmap(axes[0, 1], heatmap_data2, x_labels, y_labels, 'ZORRO (Naive Approach)'))
-    heatmaps.append(plot_heatmap(axes[1, 0], heatmap_data3, x_labels, y_labels, 'Meyer et al. (RndFrst, mae)'))
-    heatmaps.append(plot_heatmap(axes[1, 1], heatmap_data4, x_labels, y_labels, 'ZORRO (RndFrst, mae)'))
-    heatmaps.append(plot_heatmap(axes[2, 0], heatmap_data5, x_labels, y_labels, 'Meyer et al. (RndFrst, mse)'))
-    heatmaps.append(plot_heatmap(axes[2, 1], heatmap_data6, x_labels, y_labels, 'ZORRO (RndFrst, mse)'))
-    heatmaps.append(plot_heatmap(axes[3, 0], heatmap_data7, x_labels, y_labels, 'Meyer et al. (LinReg, mae)'))
-    heatmaps.append(plot_heatmap(axes[3, 1], heatmap_data8, x_labels, y_labels, 'ZORRO (LinReg, mae)'))
-    heatmaps.append(plot_heatmap(axes[4, 0], heatmap_data9, x_labels, y_labels, 'Meyer et al. (LinReg, mse)'))
-    heatmaps.append(plot_heatmap(axes[4, 1], heatmap_data10, x_labels, y_labels, 'ZORRO (LinReg, mse)'))
+    heatmaps.append(plot_heatmap(axes[1, 0], heatmap_data9, x_labels, y_labels, 'Meyer et al. (LinReg, mse)'))
+    heatmaps.append(plot_heatmap(axes[1, 1], heatmap_data10, x_labels, y_labels, 'ZORRO (LinReg, mse)'))
+    heatmaps.append(plot_heatmap(axes[2, 0], heatmap_data7, x_labels, y_labels, 'Meyer et al. (LinReg, mae)'))
+    heatmaps.append(plot_heatmap(axes[2, 1], heatmap_data8, x_labels, y_labels, 'ZORRO (LinReg, mae)'))
+    heatmaps.append(plot_heatmap(axes[3, 0], heatmap_data5, x_labels, y_labels, 'Meyer et al. (RndFrst, mse)'))
+    heatmaps.append(plot_heatmap(axes[3, 1], heatmap_data6, x_labels, y_labels, 'ZORRO (RndFrst, mse)'))
+    heatmaps.append(plot_heatmap(axes[4, 0], heatmap_data3, x_labels, y_labels, 'Meyer et al. (RndFrst, mae)'))
+    heatmaps.append(plot_heatmap(axes[4, 1], heatmap_data4, x_labels, y_labels, 'ZORRO (RndFrst, mae)'))
 
     for i, ax_row in enumerate(axes):
         for j, ax in enumerate(ax_row):
